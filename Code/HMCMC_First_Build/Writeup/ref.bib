@@ -1,0 +1,119 @@
+
+@article{neal_mcmc_2012,
+	title = {{MCMC} using Hamiltonian dynamics},
+	url = {http://arxiv.org/abs/1206.1901},
+	abstract = {Hamiltonian dynamics can be used to produce distant proposals for the Metropolis algorithm, thereby avoiding the slow exploration of the state space that results from the diffusive behaviour of simple random-walk proposals. Though originating in physics, Hamiltonian dynamics can be applied to most problems with continuous state spaces by simply introducing fictitious "momentum" variables. A key to its usefulness is that Hamiltonian dynamics preserves volume, and its trajectories can thus be used to define complex mappings without the need to account for a hard-to-compute Jacobian factor - a property that can be exactly maintained even when the dynamics is approximated by discretizing time. In this review, I discuss theoretical and practical aspects of Hamiltonian Monte Carlo, and present some of its variations, including using windows of states for deciding on acceptance or rejection, computing trajectories using fast approximations, tempering during the course of a trajectory to handle isolated modes, and short-cut methods that prevent useless trajectories from taking much computation time.},
+	journaltitle = {{arXiv}:1206.1901 [physics, stat]},
+	author = {Neal, Radford M.},
+	urldate = {2017-05-26},
+	date = {2012-06-08},
+	eprinttype = {arxiv},
+	eprint = {1206.1901},
+	keywords = {Physics - Computational Physics, Statistics - Computation},
+	file = {arXiv\:1206.1901 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/HR2FW6E7/Neal - 2012 - MCMC using Hamiltonian dynamics.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/D9MIV2KG/1206.html:text/html}
+}
+
+@article{wood_thin_2003,
+	title = {Thin plate regression splines},
+	volume = {65},
+	issn = {1467-9868},
+	url = {http://onlinelibrary.wiley.com/doi/10.1111/1467-9868.00374/abstract},
+	doi = {10.1111/1467-9868.00374},
+	abstract = {Summary. I discuss the production of low rank smoothers for d ≥ 1 dimensional data, which can be fitted by regression or penalized regression methods. The smoothers are constructed by a simple transformation and truncation of the basis that arises from the solution of the thin plate spline smoothing problem and are optimal in the sense that the truncation is designed to result in the minimum possible perturbation of the thin plate spline smoothing problem given the dimension of the basis used to construct the smoother. By making use of Lanczos iteration the basis change and truncation are computationally efficient. The smoothers allow the use of approximate thin plate spline models with large data sets, avoid the problems that are associated with ‘knot placement’ that usually complicate modelling with regression splines or penalized regression splines, provide a sensible way of modelling interaction terms in generalized additive models, provide low rank approximations to generalized smoothing spline models, appropriate for use with large data sets, provide a means for incorporating smooth functions of more than one variable into non-linear models and improve the computational efficiency of penalized likelihood models incorporating thin plate splines. Given that the approach produces spline-like models with a sparse basis, it also provides a natural way of incorporating unpenalized spline-like terms in linear and generalized linear models, and these can be treated just like any other model terms from the point of view of model selection, inference and diagnostics.},
+	pages = {95--114},
+	number = {1},
+	journaltitle = {Journal of the Royal Statistical Society: Series B (Statistical Methodology)},
+	author = {Wood, Simon N.},
+	urldate = {2017-05-26},
+	date = {2003-02-01},
+	langid = {english},
+	keywords = {Generalized additive model, Regression spline, Thin plate spline},
+	file = {Full Text PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/CCGGFDN3/Wood - 2003 - Thin plate regression splines.pdf:application/pdf;Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/WP5CK9XA/abstract.html:text/html}
+}
+
+@article{betancourt_geometric_2014,
+	title = {The Geometric Foundations of Hamiltonian Monte Carlo},
+	url = {http://arxiv.org/abs/1410.5110},
+	abstract = {Although Hamiltonian Monte Carlo has proven an empirical success, the lack of a rigorous theoretical understanding of the algorithm has in many ways impeded both principled developments of the method and use of the algorithm in practice. In this paper we develop the formal foundations of the algorithm through the construction of measures on smooth manifolds, and demonstrate how the theory naturally identifies efficient implementations and motivates promising generalizations.},
+	journaltitle = {{arXiv}:1410.5110 [stat]},
+	author = {Betancourt, M. J. and Byrne, Simon and Livingstone, Samuel and Girolami, Mark},
+	urldate = {2017-05-26},
+	date = {2014-10-19},
+	eprinttype = {arxiv},
+	eprint = {1410.5110},
+	keywords = {Statistics - Methodology},
+	file = {arXiv\:1410.5110 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/C8DHMJBI/Betancourt et al. - 2014 - The Geometric Foundations of Hamiltonian Monte Car.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/2M8WVHE7/1410.html:text/html}
+}
+
+@article{conrad_accelerating_2015,
+	title = {Accelerating Asymptotically Exact {MCMC} for Computationally Intensive Models via Local Approximations},
+	rights = {http://creativecommons.org/licenses/by-nc-sa/4.0/},
+	issn = {0162-1459},
+	url = {http://dspace.mit.edu/handle/1721.1/99937},
+	abstract = {We construct a new framework for accelerating Markov chain Monte Carlo in posterior sampling problems where standard methods are limited by the computational cost of the likelihood, or of numerical models embedded therein. Our approach introduces local approximations of these models into the Metropolis-Hastings kernel, borrowing ideas from deterministic approximation theory, optimization, and experimental design. Previous efforts at integrating approximate models into inference typically sacrifice either the sampler’s exactness or efficiency; our work seeks to address these limitations by exploiting useful convergence characteristics of local approximations. We prove the ergodicity of our approximate Markov chain, showing that it samples asymptotically from the exact posterior distribution of interest. We describe variations of the algorithm that employ either local polynomial approximations or local Gaussian process regressors. Our theoretical results reinforce the key observation underlying this paper: when the likelihood has some local regularity, the number of model evaluations per {MCMC} step can be greatly reduced without biasing the Monte Carlo average. Numerical experiments demonstrate multiple order-of-magnitude reductions in the number of forward model evaluations used in representative {ODE} and {PDE} inference problems, with both synthetic and real data.},
+	journaltitle = {{arXiv}},
+	author = {Conrad, Patrick R. and Marzouk, Youssef M. and Pillai, Natesh S. and Smith, Aaron},
+	urldate = {2017-05-26},
+	date = {2015-10},
+	langid = {american},
+	file = {Full Text PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/CFMMUMBD/Conrad et al. - 2015 - Accelerating Asymptotically Exact MCMC for Computa.pdf:application/pdf;Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/HXNWJHTH/99937.html:text/html}
+}
+
+@article{betancourt_conceptual_2017,
+	title = {A Conceptual Introduction to Hamiltonian Monte Carlo},
+	url = {http://arxiv.org/abs/1701.02434},
+	abstract = {Hamiltonian Monte Carlo has proven a remarkable empirical success, but only recently have we begun to develop a rigorous under- standing of why it performs so well on difficult problems and how it is best applied in practice. Unfortunately, that understanding is con- fined within the mathematics of differential geometry which has limited its dissemination, especially to the applied communities for which it is particularly important. In this review I provide a comprehensive conceptual account of these theoretical foundations, focusing on developing a principled intuition behind the method and its optimal implementations rather of any ex- haustive rigor. Whether a practitioner or a statistician, the dedicated reader will acquire a solid grasp of how Hamiltonian Monte Carlo works, when it succeeds, and, perhaps most importantly, when it fails.},
+	journaltitle = {{arXiv}:1701.02434 [stat]},
+	author = {Betancourt, Michael},
+	urldate = {2017-05-26},
+	date = {2017-01-09},
+	eprinttype = {arxiv},
+	eprint = {1701.02434},
+	keywords = {Statistics - Methodology},
+	file = {arXiv\:1701.02434 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/V4DWD3RE/Betancourt - 2017 - A Conceptual Introduction to Hamiltonian Monte Car.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/DDSJ7EF7/1701.html:text/html}
+}
+
+@article{zhang_hamiltonian_2015,
+	title = {Hamiltonian Monte Carlo Acceleration Using Surrogate Functions with Random Bases},
+	url = {http://arxiv.org/abs/1506.05555},
+	abstract = {For big data analysis, high computational cost for Bayesian methods often limits their applications in practice. In recent years, there have been many attempts to improve computational efficiency of Bayesian inference. Here we propose an efficient and scalable computational technique for a state-of-the-art Markov Chain Monte Carlo ({MCMC}) methods, namely, Hamiltonian Monte Carlo ({HMC}). The key idea is to explore and exploit the structure and regularity in parameter space for the underlying probabilistic model to construct an effective approximation of its geometric properties. To this end, we build a surrogate function to approximate the target distribution using properly chosen random bases and an efficient optimization process. The resulting method provides a flexible, scalable, and efficient sampling algorithm, which converges to the correct target distribution. We show that by choosing the basis functions and optimization process differently, our method can be related to other approaches for the construction of surrogate functions such as generalized additive models or Gaussian process models. Experiments based on simulated and real data show that our approach leads to substantially more efficient sampling algorithms compared to existing state-of-the art methods.},
+	journaltitle = {{arXiv}:1506.05555 [stat]},
+	author = {Zhang, Cheng and Shahbaba, Babak and Zhao, Hongkai},
+	urldate = {2017-05-26},
+	date = {2015-06-18},
+	eprinttype = {arxiv},
+	eprint = {1506.05555},
+	keywords = {Statistics - Computation, Statistics - Machine Learning},
+	file = {arXiv\:1506.05555 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/WMCT22UG/Zhang et al. - 2015 - Hamiltonian Monte Carlo Acceleration Using Surroga.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/IS5UZAKN/1506.html:text/html}
+}
+
+@book{buhmann_radial_2003,
+	title = {Radial Basis Functions: Theory and Implementations},
+	isbn = {978-1-139-43524-6},
+	shorttitle = {Radial Basis Functions},
+	abstract = {In many areas of mathematics, science and engineering, from computer graphics to inverse methods to signal processing, it is necessary to estimate parameters, usually multidimensional, by approximation and interpolation. Radial basis functions are a powerful tool which work well in very general circumstances and so are becoming of widespread use as the limitations of other methods, such as least squares, polynomial interpolation or wavelet-based, become apparent. The author's aim is to give a thorough treatment from both the theoretical and practical implementation viewpoints. For example, he emphasises the many positive features of radial basis functions such as the unique solvability of the interpolation problem, the computation of interpolants, their smoothness and convergence and provides a careful classification of the radial basis functions into types that have different convergence. A comprehensive bibliography rounds off what will prove a very valuable work.},
+	pagetotal = {271},
+	publisher = {Cambridge University Press},
+	author = {Buhmann, Martin D.},
+	date = {2003-07-03},
+	langid = {english},
+	note = {Google-Books-{ID}: {TRMf}53opzlsC},
+	keywords = {Mathematics / Mathematical Analysis, Mathematics / Numerical Analysis}
+}
+
+@article{roberts_coupling_2007,
+	title = {Coupling and Ergodicity of Adaptive Markov Chain Monte Carlo Algorithms},
+	volume = {44},
+	issn = {0021-9002, 1475-6072},
+	url = {https://www.cambridge.org/core/journals/journal-of-applied-probability/article/coupling-and-ergodicity-of-adaptive-markov-chain-monte-carlo-algorithms/91713CBCA261758088FCDFBF8DB43FE0},
+	doi = {10.1017/S0021900200117954},
+	abstract = {We consider basic ergodicity properties of adaptive Markov chain Monte Carlo algorithms under minimal assumptions, using coupling constructions. We prove convergence in distribution and a weak law of large numbers. We also give counterexamples to demonstrate that the assumptions we make are not redundant.},
+	pages = {458--475},
+	number = {2},
+	journaltitle = {Journal of Applied Probability},
+	author = {Roberts, Gareth O. and Rosenthal, Jeffrey S.},
+	urldate = {2017-05-26},
+	date = {2007-06},
+	keywords = {60J10, 60J22, 65C40, computational methods, Markov chains},
+	file = {Full Text PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/QI9E8FM2/Roberts and Rosenthal - 2007 - Coupling and Ergodicity of Adaptive Markov Chain M.pdf:application/pdf;Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/JVQ9ZFNN/91713CBCA261758088FCDFBF8DB43FE0.html:text/html}
+}
