@@ -1,0 +1,378 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.6 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \sortlist[entry]{nyt/global}
+    \entry{betancourt_geometric_2014}{article}{}
+      \name{author}{4}{}{%
+        {{uniquename=1,hash=894388501a01eee7a955e1c2ce5b0d07}{%
+           family={Betancourt},
+           family_i={B\bibinitperiod},
+           given={M.\bibnamedelimi J.},
+           given_i={M\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{uniquename=0,hash=5251f1a0e695f0e0d885ec2633b5d085}{%
+           family={Byrne},
+           family_i={B\bibinitperiod},
+           given={Simon},
+           given_i={S\bibinitperiod}}}%
+        {{uniquename=0,hash=ef11adf5ab8391f09c2997461957a479}{%
+           family={Livingstone},
+           family_i={L\bibinitperiod},
+           given={Samuel},
+           given_i={S\bibinitperiod}}}%
+        {{uniquename=0,hash=29d5a93ca5a81c990256c62b097f65bb}{%
+           family={Girolami},
+           family_i={G\bibinitperiod},
+           given={Mark},
+           given_i={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{2319cfadcf622238ce0db88de2e81a54}
+      \strng{fullhash}{3b46518e6584c5374db5284409c888f8}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelyear}{2014}
+      \field{labelmonth}{10}
+      \field{labelday}{19}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Although Hamiltonian Monte Carlo has proven an empirical success, the lack of a rigorous theoretical understanding of the algorithm has in many ways impeded both principled developments of the method and use of the algorithm in practice. In this paper we develop the formal foundations of the algorithm through the construction of measures on smooth manifolds, and demonstrate how the theory naturally identifies efficient implementations and motivates promising generalizations.}
+      \field{day}{19}
+      \field{eprinttype}{arxiv}
+      \field{journaltitle}{{arXiv}:1410.5110 [stat]}
+      \field{month}{10}
+      \field{title}{The Geometric Foundations of Hamiltonian Monte Carlo}
+      \field{urlday}{26}
+      \field{urlmonth}{05}
+      \field{urlyear}{2017}
+      \field{year}{2014}
+      \verb{eprint}
+      \verb 1410.5110
+      \endverb
+      \verb{file}
+      \verb arXiv\:1410.5110 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/C8DHMJBI/Betancourt et al. - 2014 - The Geometric Foundations of Hamiltonian Monte Car.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/2M8WVHE7/1410.html:text/html
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/1410.5110
+      \endverb
+      \keyw{Statistics - Methodology}
+    \endentry
+    \entry{betancourt_conceptual_2017}{article}{}
+      \name{author}{1}{}{%
+        {{uniquename=1,hash=1982fa604a3f94837efceaa53330b2a4}{%
+           family={Betancourt},
+           family_i={B\bibinitperiod},
+           given={Michael},
+           given_i={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{1982fa604a3f94837efceaa53330b2a4}
+      \strng{fullhash}{1982fa604a3f94837efceaa53330b2a4}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelyear}{2017}
+      \field{labelmonth}{01}
+      \field{labelday}{09}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Hamiltonian Monte Carlo has proven a remarkable empirical success, but only recently have we begun to develop a rigorous under- standing of why it performs so well on difficult problems and how it is best applied in practice. Unfortunately, that understanding is con- fined within the mathematics of differential geometry which has limited its dissemination, especially to the applied communities for which it is particularly important. In this review I provide a comprehensive conceptual account of these theoretical foundations, focusing on developing a principled intuition behind the method and its optimal implementations rather of any ex- haustive rigor. Whether a practitioner or a statistician, the dedicated reader will acquire a solid grasp of how Hamiltonian Monte Carlo works, when it succeeds, and, perhaps most importantly, when it fails.}
+      \field{day}{09}
+      \field{eprinttype}{arxiv}
+      \field{journaltitle}{{arXiv}:1701.02434 [stat]}
+      \field{month}{01}
+      \field{title}{A Conceptual Introduction to Hamiltonian Monte Carlo}
+      \field{urlday}{26}
+      \field{urlmonth}{05}
+      \field{urlyear}{2017}
+      \field{year}{2017}
+      \verb{eprint}
+      \verb 1701.02434
+      \endverb
+      \verb{file}
+      \verb arXiv\:1701.02434 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/V4DWD3RE/Betancourt - 2017 - A Conceptual Introduction to Hamiltonian Monte Car.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/DDSJ7EF7/1701.html:text/html
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/1701.02434
+      \endverb
+      \keyw{Statistics - Methodology}
+    \endentry
+    \entry{buhmann_radial_2003}{book}{}
+      \name{author}{1}{}{%
+        {{uniquename=0,hash=b3de1b75b3022f1136e17da1aa1d8b94}{%
+           family={Buhmann},
+           family_i={B\bibinitperiod},
+           given={Martin\bibnamedelima D.},
+           given_i={M\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{b3de1b75b3022f1136e17da1aa1d8b94}
+      \strng{fullhash}{b3de1b75b3022f1136e17da1aa1d8b94}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelyear}{2003}
+      \field{labelmonth}{07}
+      \field{labelday}{03}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{In many areas of mathematics, science and engineering, from computer graphics to inverse methods to signal processing, it is necessary to estimate parameters, usually multidimensional, by approximation and interpolation. Radial basis functions are a powerful tool which work well in very general circumstances and so are becoming of widespread use as the limitations of other methods, such as least squares, polynomial interpolation or wavelet-based, become apparent. The author's aim is to give a thorough treatment from both the theoretical and practical implementation viewpoints. For example, he emphasises the many positive features of radial basis functions such as the unique solvability of the interpolation problem, the computation of interpolants, their smoothness and convergence and provides a careful classification of the radial basis functions into types that have different convergence. A comprehensive bibliography rounds off what will prove a very valuable work.}
+      \field{day}{03}
+      \field{isbn}{978-1-139-43524-6}
+      \field{langid}{english}
+      \field{month}{07}
+      \field{note}{Google-Books-{ID}: {TRMf}53opzlsC}
+      \field{pagetotal}{271}
+      \field{shorttitle}{Radial Basis Functions}
+      \field{title}{Radial Basis Functions: Theory and Implementations}
+      \field{year}{2003}
+      \keyw{Mathematics / Mathematical Analysis,Mathematics / Numerical Analysis}
+    \endentry
+    \entry{conrad_accelerating_2015}{article}{}
+      \name{author}{4}{}{%
+        {{uniquename=0,hash=44505bd9d51d55dd9066c2a1b873360d}{%
+           family={Conrad},
+           family_i={C\bibinitperiod},
+           given={Patrick\bibnamedelima R.},
+           given_i={P\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{uniquename=0,hash=b68848e1025e8544368ed3ff7fa47dc6}{%
+           family={Marzouk},
+           family_i={M\bibinitperiod},
+           given={Youssef\bibnamedelima M.},
+           given_i={Y\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{uniquename=0,hash=c94a1e02f5d177ca26fa00b287136b26}{%
+           family={Pillai},
+           family_i={P\bibinitperiod},
+           given={Natesh\bibnamedelima S.},
+           given_i={N\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{uniquename=0,hash=502710991404e86bdfe938f458c1b8bf}{%
+           family={Smith},
+           family_i={S\bibinitperiod},
+           given={Aaron},
+           given_i={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{1fc9b0eb9e044710195e4894d2d02bc9}
+      \strng{fullhash}{9ee82adca81d3e94c036717d04c8f21f}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{2015}
+      \field{labelmonth}{10}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We construct a new framework for accelerating Markov chain Monte Carlo in posterior sampling problems where standard methods are limited by the computational cost of the likelihood, or of numerical models embedded therein. Our approach introduces local approximations of these models into the Metropolis-Hastings kernel, borrowing ideas from deterministic approximation theory, optimization, and experimental design. Previous efforts at integrating approximate models into inference typically sacrifice either the sampler’s exactness or efficiency; our work seeks to address these limitations by exploiting useful convergence characteristics of local approximations. We prove the ergodicity of our approximate Markov chain, showing that it samples asymptotically from the exact posterior distribution of interest. We describe variations of the algorithm that employ either local polynomial approximations or local Gaussian process regressors. Our theoretical results reinforce the key observation underlying this paper: when the likelihood has some local regularity, the number of model evaluations per {MCMC} step can be greatly reduced without biasing the Monte Carlo average. Numerical experiments demonstrate multiple order-of-magnitude reductions in the number of forward model evaluations used in representative {ODE} and {PDE} inference problems, with both synthetic and real data.}
+      \field{issn}{0162-1459}
+      \field{journaltitle}{{arXiv}}
+      \field{langid}{american}
+      \field{month}{10}
+      \field{title}{Accelerating Asymptotically Exact {MCMC} for Computationally Intensive Models via Local Approximations}
+      \field{urlday}{26}
+      \field{urlmonth}{05}
+      \field{urlyear}{2017}
+      \field{year}{2015}
+      \verb{file}
+      \verb Full Text PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/CFMMUMBD/Conrad et al. - 2015 - Accelerating Asymptotically Exact MCMC for Computa.pdf:application/pdf;Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/HXNWJHTH/99937.html:text/html
+      \endverb
+      \verb{url}
+      \verb http://dspace.mit.edu/handle/1721.1/99937
+      \endverb
+    \endentry
+    \entry{neal_mcmc_2012}{article}{}
+      \name{author}{1}{}{%
+        {{uniquename=0,hash=65d7fa5657a0bb6a58702171f1d98cf0}{%
+           family={Neal},
+           family_i={N\bibinitperiod},
+           given={Radford\bibnamedelima M.},
+           given_i={R\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{65d7fa5657a0bb6a58702171f1d98cf0}
+      \strng{fullhash}{65d7fa5657a0bb6a58702171f1d98cf0}
+      \field{sortinit}{N}
+      \field{sortinithash}{925374ca63e7594de7fafdb83e64d41d}
+      \field{labelyear}{2012}
+      \field{labelmonth}{06}
+      \field{labelday}{08}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Hamiltonian dynamics can be used to produce distant proposals for the Metropolis algorithm, thereby avoiding the slow exploration of the state space that results from the diffusive behaviour of simple random-walk proposals. Though originating in physics, Hamiltonian dynamics can be applied to most problems with continuous state spaces by simply introducing fictitious "momentum" variables. A key to its usefulness is that Hamiltonian dynamics preserves volume, and its trajectories can thus be used to define complex mappings without the need to account for a hard-to-compute Jacobian factor - a property that can be exactly maintained even when the dynamics is approximated by discretizing time. In this review, I discuss theoretical and practical aspects of Hamiltonian Monte Carlo, and present some of its variations, including using windows of states for deciding on acceptance or rejection, computing trajectories using fast approximations, tempering during the course of a trajectory to handle isolated modes, and short-cut methods that prevent useless trajectories from taking much computation time.}
+      \field{day}{08}
+      \field{eprinttype}{arxiv}
+      \field{journaltitle}{{arXiv}:1206.1901 [physics, stat]}
+      \field{month}{06}
+      \field{title}{{MCMC} using Hamiltonian dynamics}
+      \field{urlday}{26}
+      \field{urlmonth}{05}
+      \field{urlyear}{2017}
+      \field{year}{2012}
+      \verb{eprint}
+      \verb 1206.1901
+      \endverb
+      \verb{file}
+      \verb arXiv\:1206.1901 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/HR2FW6E7/Neal - 2012 - MCMC using Hamiltonian dynamics.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/D9MIV2KG/1206.html:text/html
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/1206.1901
+      \endverb
+      \keyw{Physics - Computational Physics,Statistics - Computation}
+    \endentry
+    \entry{roberts_coupling_2007}{article}{}
+      \name{author}{2}{}{%
+        {{uniquename=0,hash=2a76c81f68d43f4706faae1cff47549f}{%
+           family={Roberts},
+           family_i={R\bibinitperiod},
+           given={Gareth\bibnamedelima O.},
+           given_i={G\bibinitperiod\bibinitdelim O\bibinitperiod}}}%
+        {{uniquename=0,hash=6c41550bbbe91c4fd4b3357d3d1d8e4c}{%
+           family={Rosenthal},
+           family_i={R\bibinitperiod},
+           given={Jeffrey\bibnamedelima S.},
+           given_i={J\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+      }
+      \strng{namehash}{eebe508051d04d9c622903d04d4b534a}
+      \strng{fullhash}{eebe508051d04d9c622903d04d4b534a}
+      \field{sortinit}{R}
+      \field{sortinithash}{c7387613477035a752d935acfc3e3ea2}
+      \field{labelyear}{2007}
+      \field{labelmonth}{06}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We consider basic ergodicity properties of adaptive Markov chain Monte Carlo algorithms under minimal assumptions, using coupling constructions. We prove convergence in distribution and a weak law of large numbers. We also give counterexamples to demonstrate that the assumptions we make are not redundant.}
+      \field{issn}{0021-9002, 1475-6072}
+      \field{journaltitle}{Journal of Applied Probability}
+      \field{month}{06}
+      \field{number}{2}
+      \field{title}{Coupling and Ergodicity of Adaptive Markov Chain Monte Carlo Algorithms}
+      \field{urlday}{26}
+      \field{urlmonth}{05}
+      \field{urlyear}{2017}
+      \field{volume}{44}
+      \field{year}{2007}
+      \field{pages}{458\bibrangedash 475}
+      \range{pages}{18}
+      \verb{doi}
+      \verb 10.1017/S0021900200117954
+      \endverb
+      \verb{file}
+      \verb Full Text PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/QI9E8FM2/Roberts and Rosenthal - 2007 - Coupling and Ergodicity of Adaptive Markov Chain M.pdf:application/pdf;Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/JVQ9ZFNN/91713CBCA261758088FCDFBF8DB43FE0.html:text/html
+      \endverb
+      \verb{url}
+      \verb https://www.cambridge.org/core/journals/journal-of-applied-probability/article/coupling-and-ergodicity-of-adaptive-markov-chain-monte-carlo-algorithms/91713CBCA261758088FCDFBF8DB43FE0
+      \endverb
+      \keyw{60J10,60J22,65C40,computational methods,Markov chains}
+    \endentry
+    \entry{wood_thin_2003}{article}{}
+      \name{author}{1}{}{%
+        {{uniquename=0,hash=4adeb21d1aa0a9644612a881a7c36072}{%
+           family={Wood},
+           family_i={W\bibinitperiod},
+           given={Simon\bibnamedelima N.},
+           given_i={S\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
+      }
+      \strng{namehash}{4adeb21d1aa0a9644612a881a7c36072}
+      \strng{fullhash}{4adeb21d1aa0a9644612a881a7c36072}
+      \field{sortinit}{W}
+      \field{sortinithash}{99e3ba1b3f78bb6f073e7fa7ac11636b}
+      \field{labelyear}{2003}
+      \field{labelmonth}{02}
+      \field{labelday}{01}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Summary. I discuss the production of low rank smoothers for d ≥ 1 dimensional data, which can be fitted by regression or penalized regression methods. The smoothers are constructed by a simple transformation and truncation of the basis that arises from the solution of the thin plate spline smoothing problem and are optimal in the sense that the truncation is designed to result in the minimum possible perturbation of the thin plate spline smoothing problem given the dimension of the basis used to construct the smoother. By making use of Lanczos iteration the basis change and truncation are computationally efficient. The smoothers allow the use of approximate thin plate spline models with large data sets, avoid the problems that are associated with ‘knot placement’ that usually complicate modelling with regression splines or penalized regression splines, provide a sensible way of modelling interaction terms in generalized additive models, provide low rank approximations to generalized smoothing spline models, appropriate for use with large data sets, provide a means for incorporating smooth functions of more than one variable into non-linear models and improve the computational efficiency of penalized likelihood models incorporating thin plate splines. Given that the approach produces spline-like models with a sparse basis, it also provides a natural way of incorporating unpenalized spline-like terms in linear and generalized linear models, and these can be treated just like any other model terms from the point of view of model selection, inference and diagnostics.}
+      \field{day}{01}
+      \field{issn}{1467-9868}
+      \field{journaltitle}{Journal of the Royal Statistical Society: Series B (Statistical Methodology)}
+      \field{langid}{english}
+      \field{month}{02}
+      \field{number}{1}
+      \field{title}{Thin plate regression splines}
+      \field{urlday}{26}
+      \field{urlmonth}{05}
+      \field{urlyear}{2017}
+      \field{volume}{65}
+      \field{year}{2003}
+      \field{pages}{95\bibrangedash 114}
+      \range{pages}{20}
+      \verb{doi}
+      \verb 10.1111/1467-9868.00374
+      \endverb
+      \verb{file}
+      \verb Full Text PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/CCGGFDN3/Wood - 2003 - Thin plate regression splines.pdf:application/pdf;Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/WP5CK9XA/abstract.html:text/html
+      \endverb
+      \verb{url}
+      \verb http://onlinelibrary.wiley.com/doi/10.1111/1467-9868.00374/abstract
+      \endverb
+      \keyw{Generalized additive model,Regression spline,Thin plate spline}
+    \endentry
+    \entry{zhang_hamiltonian_2015}{article}{}
+      \name{author}{3}{}{%
+        {{uniquename=0,hash=57f7f0240f141850db99567185d1a24c}{%
+           family={Zhang},
+           family_i={Z\bibinitperiod},
+           given={Cheng},
+           given_i={C\bibinitperiod}}}%
+        {{uniquename=0,hash=77275d2aacddd2210e84aa77bfaf9d33}{%
+           family={Shahbaba},
+           family_i={S\bibinitperiod},
+           given={Babak},
+           given_i={B\bibinitperiod}}}%
+        {{uniquename=0,hash=dbee3bb00aa33c5c556c126b328e6857}{%
+           family={Zhao},
+           family_i={Z\bibinitperiod},
+           given={Hongkai},
+           given_i={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{29bfbf1ccda124d72c76481c95e51d4b}
+      \strng{fullhash}{29bfbf1ccda124d72c76481c95e51d4b}
+      \field{sortinit}{Z}
+      \field{sortinithash}{fdda4caaa6b5fa63e0c081dcb159543a}
+      \field{labelyear}{2015}
+      \field{labelmonth}{06}
+      \field{labelday}{18}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{For big data analysis, high computational cost for Bayesian methods often limits their applications in practice. In recent years, there have been many attempts to improve computational efficiency of Bayesian inference. Here we propose an efficient and scalable computational technique for a state-of-the-art Markov Chain Monte Carlo ({MCMC}) methods, namely, Hamiltonian Monte Carlo ({HMC}). The key idea is to explore and exploit the structure and regularity in parameter space for the underlying probabilistic model to construct an effective approximation of its geometric properties. To this end, we build a surrogate function to approximate the target distribution using properly chosen random bases and an efficient optimization process. The resulting method provides a flexible, scalable, and efficient sampling algorithm, which converges to the correct target distribution. We show that by choosing the basis functions and optimization process differently, our method can be related to other approaches for the construction of surrogate functions such as generalized additive models or Gaussian process models. Experiments based on simulated and real data show that our approach leads to substantially more efficient sampling algorithms compared to existing state-of-the art methods.}
+      \field{day}{18}
+      \field{eprinttype}{arxiv}
+      \field{journaltitle}{{arXiv}:1506.05555 [stat]}
+      \field{month}{06}
+      \field{title}{Hamiltonian Monte Carlo Acceleration Using Surrogate Functions with Random Bases}
+      \field{urlday}{26}
+      \field{urlmonth}{05}
+      \field{urlyear}{2017}
+      \field{year}{2015}
+      \verb{eprint}
+      \verb 1506.05555
+      \endverb
+      \verb{file}
+      \verb arXiv\:1506.05555 PDF:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/WMCT22UG/Zhang et al. - 2015 - Hamiltonian Monte Carlo Acceleration Using Surroga.pdf:application/pdf;arXiv.org Snapshot:/home/peter/.zotero/zotero/wbfpjt4d.default/zotero/storage/IS5UZAKN/1506.html:text/html
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/1506.05555
+      \endverb
+      \keyw{Statistics - Computation,Statistics - Machine Learning}
+    \endentry
+  \endsortlist
+\endrefsection
+\endinput
+
