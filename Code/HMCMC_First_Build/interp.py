@@ -61,13 +61,14 @@ class test_post:
 
         return(evaluate)
         
-    def grad(self, z):
-        [x,y] = z
-        grad = np.zeros(2)
-        grad[0] = -1*np.exp( -1 * self.p * ( 2 * self.a * x * y**2  +  2 * x  -  self.b * y  -  self.c ) )
-        grad[1] = -1*np.exp( -1 * self.p * ( 2 * self.a * x**2 * y  +  2 * y  -  self.b * x  -  self.c ) )
-
-        return(grad)
+    def grad(self, z, grad_grid_width = 1e-2):
+        hold = grad(z, self.evaluate, grad_grid_width)
+        return(hold)
+        
+        #grad = np.zeros(2)
+        #grad[0] = -1*np.exp( -1 * self.p * ( 2 * self.a * x * y**2  +  2 * x  -  self.b * y  -  self.c ) )
+        #grad[1] = -1*np.exp( -1 * self.p * ( 2 * self.a * x**2 * y  +  2 * y  -  self.b * x  -  self.c ) )
+        #return(grad)
 
 #def test_dense(x,y):
 #    M = np.array([ [3.,3.], [0.,0.], [-3., 3.] ])
@@ -98,17 +99,20 @@ class local_quad_reg:
 
         return( val )
 
-    def grad(self, x):
-        self.interpolate_density(x)
-        grad = np.zeros(self.d)
-        for i in range(1, self.d+1):
-            mask = np.zeros(1 + 2*self.d)
-            mask[i] = 1
-            mask[i+self.d] = 1
-            grad[i-1] = np.dot(self.Z, np.hstack([0, np.ones(self.d), 2*x]) * mask)
+    def grad(self, z, grad_grid_width = 1e-2):
+        hold = grad(z, self.evaluate, grad_grid_width)
+        return(hold)
 
-        return(grad)
-    
+#        self.interpolate_density(x)
+#        grad = np.zeros(self.d)
+#        for i in range(1, self.d+1):
+#            mask = np.zeros(1 + 2*self.d)
+#            mask[i] = 1
+#            mask[i+self.d] = 1
+#            grad[i-1] = np.dot(self.Z, np.hstack([0, np.ones(self.d), 2*x]) * mask)
+#
+#        return(grad)
+#    
     def neighbors(self, x):
         knn = skn.NearestNeighbors(n_neighbors = self.N)
         knn.fit(self.S)
@@ -248,35 +252,38 @@ class thin_plate:
 
         return( np.sum( np.dot(E, self.delta) + np.dot(T, self.a) ) )
 
-    def grad(self, x):
-        grad = np.zeros(self.d)
+    def grad(self, z, grad_grid_width = 1e-2):
+        hold = grad(z, self.evaluate, grad_grid_width)
+        return(hold)
 
-        for i in range(0, self.d):
-            grad_E = np.array([ self.eta_prime(npla.norm(x - S[i])) * 2*(x[i]-s[i])/npla.norm(x - s) for s in self.S])
-
-            grad_T = np.zeros( int(self.M) ) 
-            j = 0
-            for mu in range(0, self.m+1):
-                hold = self.partitions(mu, self.d)
-                for k in range(0, int( sp.special.binom(mu + self.d - 1, mu) ) ):
-                    exp = next(hold)
-
-                    if exp[i] != 0:
-                        exp[i] = exp[i] - 1
-                        t = map( lambda (x,y): pow(x,y), zip(x,exp) )
-                        t[i] = (exp[i]+1)*t[i]
-                        t = sum(t)
-
-                    else:
-                        t = 0
-                
-                    grad_T[j] = t
-                    j += 1
-              
-            grad[i] = np.dot(grad_E, self.delta) + np.dot(grad_T, self.a)
-
-        return(grad)
-
+#        grad = np.zeros(self.d)
+#
+#        for i in range(0, self.d):
+#            grad_E = np.array([ self.eta_prime(npla.norm(x - S[i])) * 2*(x[i]-s[i])/npla.norm(x - s) for s in self.S])
+#
+#            grad_T = np.zeros( int(self.M) ) 
+#            j = 0
+#            for mu in range(0, self.m+1):
+#                hold = self.partitions(mu, self.d)
+#                for k in range(0, int( sp.special.binom(mu + self.d - 1, mu) ) ):
+#                    exp = next(hold)
+#
+#                    if exp[i] != 0:
+#                        exp[i] = exp[i] - 1
+#                        t = map( lambda (x,y): pow(x,y), zip(x,exp) )
+#                        t[i] = (exp[i]+1)*t[i]
+#                        t = sum(t)
+#
+#                    else:
+#                        t = 0
+#                
+#                    grad_T[j] = t
+#                    j += 1
+#              
+#            grad[i] = np.dot(grad_E, self.delta) + np.dot(grad_T, self.a)
+#
+#        return(grad)
+#
     def partitions(self, n, k):
         for c in it.combinations(range(n+k-1), k-1):
             yield [b-a-1 for a, b in zip((-1,)+c, c+(n+k-1,))]
@@ -308,193 +315,28 @@ class thin_plate:
         [self.Q, self.R] = npla.qr( np.dot(self.U_lr.T, self.T), 'complete')
         self.Z = self.Q[:, int(self.M):]
 
+#Define test density
+A = 1
+B = 10
+C = 1
+P = 0.05
+test_dense = test_post(A,B,C,P)
 
-################################
-#TEST AND PLOT THE APPROXIMANTS#
-################################
+#Get interpol/approximating sets
+x = npr.uniform(-15,15,300)
+y = npr.uniform(-15,15,300)
 
-##Define test density
-#A = 1
-#B = 10
-#C = 1
-#P = 0.05
-#test_dense = test_post(A,B,C,P)
-#
-#
-##Get interpol/approximating sets
-#x = npr.uniform(-15,15,300)
-#y = npr.uniform(-15,15,300)
-#
-#S = np.array([x,y]).T
-#fS = test_dense.evaluate( [x,y] )
-#
-##Time the initialization of both methods
-#print('Init LQR')
-#start_time = time.time()
-#lqr_test = local_quad_reg(S, fS)
-#lqr_init_time = time.time() - start_time
-#
-#print('Init TPS')
-#start_time = time.time()
-#tps_test = thin_plate(S, fS, lam = 1e-7, lr_tol = 1.2)
-#tps_init_time = time.time() - start_time
-#
-#def lqr_dense(x,y):
-#    return( lqr_test.evaluate( np.array([x,y]) ) )
-#
-#def tps_dense(x,y):
-#    return( tps_test.evaluate( np.array([x,y]) ) )
-#
-##Testing grid
-#xi = np.linspace(-6,6,100)
-#yi = np.linspace(-6,6,100)
-#
-##Time the calculation of interp/approx vals and grad on testing grid
-#print('Calculating LQR interp density')
-#start_time = time.time()
-#lqr_d = np.reshape([lqr_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
-#lqr_gd = np.reshape([ npla.norm( grad([x,y], lqr_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
-#lqr_time = time.time() - start_time
-#
-#print('Calculating TPS interp density')
-#start_time = time.time()
-#tps_d = np.reshape([tps_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
-#tps_gd = np.reshape([ npla.norm( grad([x,y], tps_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
-#tps_time = time.time() - start_time
-#
-##For error calcs
-#print('Calculating true density')
-#start_time = time.time()
-#d = np.reshape([test_dense.evaluate([x,y]) for x in xi for y in yi], [len(xi), len(yi)] )
-#gd = np.reshape([ npla.norm( grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)] )
-#true_time = time.time() - start_time
-#
-##Check max val and grad error
-#lqr_err = np.max(np.abs( (lqr_d - d))) / np.max( np.abs(d) )
-#tps_err = np.max(np.abs( (tps_d - d))) / np.max( np.abs(d) )
-#
-#lqr_grad_err = np.max(np.abs( lqr_gd - gd )) / np.max( gd )
-#tps_grad_err = np.max(np.abs( tps_gd - gd )) / np.max( gd )
-#
-#Evaluate how lambda effects err
-print('Testing lambda vs. err')
-lams = [1e-10, 1e-7,1e-4, 1e-1, 1, 10, 100]
-lam_err = []
-lam_grad_err =[]
-for l in lams:
-    print(l)
-    tps_lam_test = thin_plate(S, fS, lam = l, lr_tol = 1.2)
+S = np.array([x,y]).T
+fS = test_dense.evaluate( [x,y] )
 
-    def tps_lam_dense(x,y):
-        return( tps_test.evaluate( np.array([x,y]) ) )
+#Time the initialization of both methods
+print('Init LQR')
+start_time = time.time()
+lqr_test = local_quad_reg(S, fS)
+lqr_init_time = time.time() - start_time
 
-    tps_d_lam = np.reshape([tps_lam_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
-    tps_gd_lam = np.reshape([ npla.norm( grad([x,y], tps_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
-
-    lam_err.append( np.max(np.abs( (tps_d_lam - d))) / np.max( np.abs(d) ) )
-    lam_grad_err.append( np.max(np.abs( tps_gd_lam - gd )) / np.max( gd ) )
-    
-
-##Test pushforward error
-#print('Testing pushforward err')
-#test_n = 100
-#lqr_ham_err = []
-#tps_ham_err = []
-#
-#def lqr_pot(z):
-#    [x,y] = z
-#    return( -1*np.log( np.abs(lqr_dense(x,y)) ) )
-#
-#def tps_pot(z):
-#    [x,y] = z
-#    return( -1*np.log( np.abs(tps_dense(x,y)) ) )
-#
-#def test_pot(z):
-#    return( -1*np.log( np.abs(test_dense.evaluate(z)) ) )
-#
-#def path_dist(x):
-#    dist = 0
-#    
-#    for i in range(1, x.shape[0]):
-#        dist += npla.norm( x[i] - x[i-1] )
-#
-#    return(dist)
-#        
-#
-#h = 1e-5
-#for unused_index in range(0,test_n):
-#    #steps = np.random.choice(range(1,3))
-#    steps = np.random.choice( range(10,100) )
-#
-#    lqr_x0 = np.array([ np.random.uniform(-6,6) for unused2 in range(0,4) ])
-#    tps_x0 = lqr_x0.copy()
-#    test_x0 = tps_x0.copy()
-#
-#    lqr_path = [lqr_x0]
-#    tps_path = [tps_x0]
-#    test_path = [test_x0]
-#
-#    
-#    for i in range(0,steps):
-#        print([unused_index,i, steps])
-#        lqr_x0 = lpfrg_pshfwd(lqr_x0, h, lqr_pot, np.eye(2))
-#        tps_x0 = lpfrg_pshfwd(lqr_x0, h, tps_pot, np.eye(2))
-#        test_x0 = lpfrg_pshfwd(lqr_x0, h, test_pot, np.eye(2))
-#
-#        lqr_path.append(lqr_x0)
-#        tps_path.append(tps_x0)
-#        test_path.append(test_x0)
-#
-#    lqr_ham_err.append( sum( npla.norm( np.array(lqr_path) - np.array(test_path) , axis = 1 ) ) / path_dist( np.array(test_path) ) )
-#    tps_ham_err.append( sum( npla.norm( np.array(tps_path) - np.array(test_path) , axis = 1 ) ) / path_dist( np.array(test_path) ) )
-#
-#print( np.mean(lqr_ham_err) )
-#print( np.mean(tps_ham_err) )
-#
-
-#def lpfrg_pshfwd(x0, h, V, M):
-#    d = int(len(x0)/2.)
-#    [q0, p0] = [ x0[0:d], x0[ d:(2*d + 1) ] ]
-#
-#    pt = p0 - (h/2.)*grad(q0,V)
-#    qt = q0 + h*npla.inv(M)*pt
-#    pt = pt - (h/2.)*grad(qt,V)
-#
-#    return( np.array( list(qt) + list(pt) ) )    
-#
-################
-#PLOTTING STUFF#
-################    
-#[xi, yi] = np.meshgrid(xi, yi)
-#fig = plt.figure()
-#ax = fig.add_subplot(111, projection='3d')
-#ax.plot_surface(xi,yi, lqr_d)
-#plt.show()
-
-#plt.contour(xi,yi, np.abs(d-di)/np.abs(np.max(d)))
-#plt.show()
-
-
-
-#######
-#CRUFT#
-#######
-#plt.plot(xi,d)
-#plt.plot(xi,di)
-#plt.show()
-
-#ax.scatter(S[:,0], S[:,1], fS)
-#xi = yi = np.linspace(-10,10,100)
-#di = np.reshape([rbi(x,y) for x in xi for y in yi], [len(xi),len(yi)])
-#x_grid = np.reshape([x for x in xi for y in yi], [len(xi),len(yi)])
-#y_grid = np.reshape([y for x in xi for y in yi], [len(xi),len(yi)])
-
-#ax.scatter(xi,yi,di)
-#plt.show()
-#def frob_err(k):
-#    d_lr = np.diag( test.D[:k] )
-#    u_lr = test.U[:,:k]
-#    e_lr = np.dot( u_lr, np.dot(d_lr,u_lr.T) )
-#    return( npla.norm(test.E - e_lr, 'fro')/npla.norm(test.E, 'fro') )
-#
+print('Init TPS')
+start_time = time.time()
+tps_test = thin_plate(S, fS, lam = 1e-7, lr_tol = 1.2)
+tps_init_time = time.time() - start_time
 

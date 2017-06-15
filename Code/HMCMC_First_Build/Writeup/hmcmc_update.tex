@@ -42,14 +42,7 @@ The basic skeleton of an HMCMC algorithm procedes as follows:
 \dot{\vec{p}} &= - \nabla ln(\pi(\vec{q}))\\
 \end{split}
 \end{equation}
-\item This integration is typically done by the leapfrog method, but any other \textit{symplectic} numerical integrator will work.  This takes the form:
-\begin{equation}
-\begin{split}
-\vec{p}_{t+h/2} &= \vec{p}_t - (\frac{h}{2})  \nabla ln(\pi(\vec{q_t}))\\
-\vec{q}_h &= \vec{q}_t + (h)M^{-1} \vec{p}_{t+h/2} \\ 
-\vec{p}_h &= \vec{p}_{t+h/2} - (\frac{h}{2})  \nabla ln(\pi(\vec{q_{t+h}})) \\
-\end{split}
-\end{equation}
+\item This integration is typically done by the leapfrog method (see Appendix), but any other \textit{symplectic} numerical integrator will work.
 \item After integrating to time $sh$ the candidate points $q_{n+1}, p_{n+1}$ (supressing vector notation) are set as $q_{n+sh}, p_{n+sh}$.  To make the process reversible we need to now negate $p_{n+1}$, so our candidate points are $q_{n+1}, -p_{n+1}$.  Then the candidate $q_{n+1}$ gets plugged into the usual Metropolis accept/reject probability.  Doing a Metropolis accept/reject would not be necessary if we could integrate (1) without error, but due to the error in (2) we would get biased estimates without the Metropolis step.
 \end{enumerate}
 
@@ -69,12 +62,25 @@ Where the max's are taken over the grid points $\vec{x}^{(j)}$. I similarly comp
 e_i = \frac{ \text{max}_{j} \left( \Vert \hat{\pi}_i(\vec{x}^{(j)}) - \pi(\vec{x}^{(j)})  \Vert \right) } { \text{max}_j \left( \Vert \pi(\vec{x}^{(j)}) \Vert \right) }
 \]
 
-The thin plate splines fared substantially better, with $e_{\text{TPS}} = 0.319$ and $\epsilon_{\text{TPS}} = 0.826$ compared to $e_{\text{LQR}} = 0.596$ and $\epsilon_{LQR} = 57.9$.  This was calculated with a TPS smoothness parameter $\lambda = 1e-7$.  To asses how varying this parameter changed the TPS fit I re-computed $e_{\text{TPS}}$ and $\epsilon_{\text{TPS}}$ for each $\lambda \in [1e-10, 1e-7,1e-4, 1e-1, 1, 10, 100]$.
+The thin plate splines fared substantially better, with $e_{\text{TPS}} = 0.319$ and $\epsilon_{\text{TPS}} = 0.826$ compared to $e_{\text{LQR}} = 0.596$ and $\epsilon_{LQR} = 57.9$.  This was calculated with a TPS smoothness parameter $\lambda = 1e-7$.  To asses how varying this parameter changed the TPS fit I re-computed $e_{\text{TPS}}$ and $\epsilon_{\text{TPS}}$ for each $\lambda \in [1e-10, 1e-7,1e-4, 1e-1, 1, 10, 100]$.  Virtually no effect of varying $\lambda$ was detected on either measure of error, however, for all values of $\lambda$ $e_\text{TPS} = 1.105$ and $\epsilon_\text{TPS} = 0.826$ with any differences being on the order of machine precision.
 
 \begin{figure}
 \centering
 \includegraphics[scale=.6]{./Figs/test_dense.png}
 \caption{The test density function in (3) with $A = 1, B =10, C = 1, P = 0.05$}
+\end{figure}
+
+I also tested how the gradient error might effect Hamiltonian dynamics when numerically integrated with leapfrog.  I chose a random initial, 2D position and momentum vector uniformly from the square $[-6,6] \times [-6,6]$, and then integrated forward for a random number of steps from 10 to 100, with fixed step size $h = 1e-5$.  I repeated this for 100 such initial conditions with the test density, as well as the LQR and TPS approximated densities.  I calculated the path error for method $i$ as $\rho_i = \frac{ \sum\limits_s \Vert q_i^{(s)} - q^{(s)} \Vert }{ \sum\limits_s \Vert q^{(s)} - q^{(s-1)} \Vert }$, $q_i^{(s)}$ is the $s^{\text{th}}$ leapfrog step for $V(x)$ approximated by method $i$, and $q^{(s)}$ is same for the ``true'' $V(x)$.  This is effectively the path integral of the leapfrog error normalized by the arc length of the true s-step forward integration.  Normalizing by arc length doesn't give a sense of how the error might behave in the long-time, but intuitively one expects the error to behave fairly poorly in the long time anyways so I wasn't as interested in measuring it.  My hope here is to instead get a sense of how badly the approximated potentials effect the Hamiltonian dynamics ``on average''; if both methods behave similarly on average I may then dig into the long-time error to see if there's an important difference there.
+
+Averaging over the random initial conditions and step sizes we get $E[\rho_\text{LQR}] = 1.09$ and $\text{Var}[\rho_\text{LQR}] = 0.193$, while for TPS we get $E[\rho_\text{TPS}] = 0.372$ and $\text{Var}[\rho_\text{TPS}] = 0.398$.  The high variance of the TPS path error was surprising to me, although looking at the histograms of the observed error (Fig. 2) we see that the TPS approximated potential does generally perform better than the LQR approximation.  It does, however, appear that both methods had a small number of equally bad initial conditions or step sizes resulting in atypically large error.  I'm guessing that these were a particularly sensistive IC or chaotic region for the Hamiltonians.
+
+\begin{figure}
+\centering
+\begin{tabular}{cc}
+\includegraphics[scale=.5]{./Figs/lqr_ham_hist.png} & \includegraphics[scale=.5]{./Figs/tps_ham_hist.png}\\
+(a) & (b)\\
+\end{tabular}
+\caption{Histogram of path errors for (a) the LQR approximated potential and (b) the TPS approximated potential}
 \end{figure}
 
 \section{Goals for Next Week}
@@ -90,6 +96,16 @@ The key feature in the Shrinking Bullseye is the inclusion of the refinements to
 \item The approximation has to be amenable to refinements. Whatever interpolation scheme  we use, it must allow us to test for refinements (ideally through something like the cross-validation approach in the Shrinking Bullseye) as well as add new points to the interpolating data set on an ad hoc basis (ie. whenever and wherever the refinement criteria is triggered).
 \item  The Hamiltonian dynamics induced by the approximation  need to be similar enough to $\pi$ that the candidates proposed are actually good. Following Betancourt’s “Conceptual Introduction to Hamiltonian Monte Carlo”, our interpolant needs to approximate the true posterior well on its typical set.
 \end{enumerate}
+
+\section{Appendix: Leapfrog Method}
+One step in the integration of (1) using the leapfrog with step-size $h$ takes the form:
+\begin{equation}
+\begin{split}
+\vec{p}_{t+h/2} &= \vec{p}_t - (\frac{h}{2})  \nabla ln(\pi(\vec{q_t}))\\
+\vec{q}_h &= \vec{q}_t + (h)M^{-1} \vec{p}_{t+h/2} \\ 
+\vec{p}_h &= \vec{p}_{t+h/2} - (\frac{h}{2})  \nabla ln(\pi(\vec{q_{t+h}})) \\
+\end{split}
+\end{equation}
 
 \printbibliography
 

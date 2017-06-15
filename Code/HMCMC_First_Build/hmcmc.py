@@ -1,68 +1,93 @@
-import numpy as np
-import numpy.random as npr
-import numpy.linalg as npla
-import scipy as sp
-import scipy.stats as sps
-import matplotlib.pyplot as plt
+execfile('interp.py')
 
-##################
-#DEFINE FUNCTIONS#
-##################
-#Define a 2d normal mixture distributions with k components each having means M (np array of size by 2 by k), covariances C (np array of size k by 2 by  2)
-def norm_mixture_post(x, M, C):
-    k = M.shape[1]
-    density = 0
-    for i in range(0,k):
-        density += sps.multivariate_normal.pdf(x,M[:,i],C[i,:,:])
+class lillypad_mcmc:
+    def __init__(self, post, S, approx='tps', M = [], kwargs):
+        self.post = post
+        self.d = post.d
 
-    return(density)
+        self.S = S
+        self.fS = np.array([ self.post(s) for s in S ])
 
-def rad_calc(x,samps,N):
-    if N > np.shape(self.S)[0]:
-        print('Not possible!')
-        return()
+        self.kwargs = kwargs
+        self.approx_flag = approx
+        
+        if self.approx_flag == 'tps':
+            self.approx = thin_plate( self.S, self.fS, **self.kwargs )
+        
+        elif self.approx_flag == 'lqr':
+            self.approx = local_quad_reg( self.S, self.fS)
+        
+        else:
+            raise ValueError("I don't recognize that approximation algorithm, try again fool!")
 
-    radii = np.sort(npla.norm(self.S-x,ord=2,axis=1))
-    R = radii[N]
-    return(R)
+        if M == []:
+            self.M = np.eye(self.d)
 
-def interpolate_density(x, s, r_def, r):  
-    B = s[0]
-    fB = s[1]
+        else:
+            self.M = M
+        
+        self.curr = self.S[ np.random.choice( range(0, self.S.shape[1]) ) ]
+        self.samps = [self.curr]
 
-    dim = B.shape()[0]
-    N = B.shape()[1]
-    
-    W = np.sqrt( [ min(1, (1 - ( (npla.norm(b-x) - r_def ) / (r_def) )**3) **3 ) for b in B.T ] )    
-    W = np.diag(W)
+        self.pot = lambda x: -1*np.log( self.approx.evaluate(x) ) 
+        self.steps = np.random.choice(range(10,101))
 
-    phi = np.zeros([N,2*dim+1])
-    phi[:,0] = np.ones(N)
-    phi[:,1:(dim+1)] = B
-    phi[:,(dim+1):(2*dim+1)] = B**2
-    q, r = npla.qr(np.dot(W,phi), mode='complete')
-    q = q[:,0:r.shape[1]]
-    r = r[0:r.shape[1],:]
-    
-    Z = np.dot(npla.inv(r), q.T)
-    Z = np.dot(Z, np.dot(W,fB))
+        
+    def propose(self, pot = self.pot, h = 1e-3, q0 = self.curr):
+        p0 = np.random.multivariate_normal( np.zeros( self.d ), M )
+        x0 = np.concatenate([ q0,p0 ])
+        
+        path = [x0]
+        for i in range(0, steps):
+            xt = lpfrg_pshfwd( path[i], h, pot, self.M)
+            path.append(xt)
 
-    return(z)
-    
-############
-#CODE BEGIN#
-############
-k = 5
-M = np.array([[1,-1], [1,1], [-1,1], [-1,-1]])
-C = np.array([np.eye(2) for unused_index in range(0,k)])
+        x0 = -1*x0[(len(xt)/2):len(xt)]
+        return([ x0, path ])
 
-n_S = 1e3
-n_S = int(n_S)
-S = [np.array([npr.uniform(-10,10,2) for unloved_index in range(0,n_S)]),[]]
-for i in range(0,n_S):
-    S[1].append( norm_mixture_post(S[0][i], M[i], C[i,:,:]) )
-S[1] = np.array(S[1])
+    def accept_prob(self, curr, cand, pot = self.pot):
+        q0 = curr[ 0:(len(curr)/2)]
+        q0_cand = cand[ 0:(len(cand)/2)]
 
+        p0 = curr[ (len(curr)/2):len(curr) ]
+        p0_cand = cand[ (len(cand)/2):len(cand) ]
 
+        a = np.min( 1, np.exp( pot(q0) - pot(q0_cand) + np.dot(p0, np.dot(self.M, p0)) + np.dot(p0_cand, np.dot(self.M, p0_cand)) ) )
+        return( a )
+            
+    def refine_test(self, path, tol = 1e-3):
+        knn = skn.NearestNeighbors(n_neighbors = int(2*self.d*len(path)) )
+        knn.fit(self.S)
+        [dists, inds] = knn.kneighbors( np.array(path) ) 
 
+        B = self.S[inds]
+        fB = self.fS[inds]
 
+        curr = path[0]
+        
+        N = B.shape[0]
+        a_list = []
+        for i in range(0,10):
+            sub_inds = np.random.choice( range(0, N), int(.9*N) )
+            B_sub = B[sub_inds]
+            fB_sub = fB[sub_inds]
+            
+            if self.approx_flag == 'tps':
+                self.approx = thin_plate( B_sub, fB_sub, **self.kwargs )
+        
+            elif self.approx_flag == 'lqr':
+                self.approx = local_quad_reg( B_sub, fB_sub)
+        
+            else:
+                raise ValueError("I don't recognize that approximation algorithm, try again fool!")
+
+            pot = lambda x: -1*np.log( self.approx.evaluate(x) )
+            [cand, path]self.propose(pot = pot)
+
+            a_list.append( self.accept_prob(curr, cand, pot = pot) )
+
+        if np.abs( max(a_list) - min(a_list) ) <= tol:
+            return(1)
+
+        else:
+            return(0)

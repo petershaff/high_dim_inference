@@ -313,69 +313,69 @@ class thin_plate:
 #TEST AND PLOT THE APPROXIMANTS#
 ################################
 
-##Define test density
-#A = 1
-#B = 10
-#C = 1
-#P = 0.05
-#test_dense = test_post(A,B,C,P)
-#
-#
-##Get interpol/approximating sets
-#x = npr.uniform(-15,15,300)
-#y = npr.uniform(-15,15,300)
-#
-#S = np.array([x,y]).T
-#fS = test_dense.evaluate( [x,y] )
-#
-##Time the initialization of both methods
-#print('Init LQR')
-#start_time = time.time()
-#lqr_test = local_quad_reg(S, fS)
-#lqr_init_time = time.time() - start_time
-#
-#print('Init TPS')
-#start_time = time.time()
-#tps_test = thin_plate(S, fS, lam = 1e-7, lr_tol = 1.2)
-#tps_init_time = time.time() - start_time
-#
-#def lqr_dense(x,y):
-#    return( lqr_test.evaluate( np.array([x,y]) ) )
-#
-#def tps_dense(x,y):
-#    return( tps_test.evaluate( np.array([x,y]) ) )
-#
-##Testing grid
-#xi = np.linspace(-6,6,100)
-#yi = np.linspace(-6,6,100)
-#
-##Time the calculation of interp/approx vals and grad on testing grid
-#print('Calculating LQR interp density')
-#start_time = time.time()
-#lqr_d = np.reshape([lqr_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
-#lqr_gd = np.reshape([ npla.norm( grad([x,y], lqr_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
-#lqr_time = time.time() - start_time
-#
-#print('Calculating TPS interp density')
-#start_time = time.time()
-#tps_d = np.reshape([tps_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
-#tps_gd = np.reshape([ npla.norm( grad([x,y], tps_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
-#tps_time = time.time() - start_time
-#
-##For error calcs
-#print('Calculating true density')
-#start_time = time.time()
-#d = np.reshape([test_dense.evaluate([x,y]) for x in xi for y in yi], [len(xi), len(yi)] )
-#gd = np.reshape([ npla.norm( grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)] )
-#true_time = time.time() - start_time
-#
-##Check max val and grad error
-#lqr_err = np.max(np.abs( (lqr_d - d))) / np.max( np.abs(d) )
-#tps_err = np.max(np.abs( (tps_d - d))) / np.max( np.abs(d) )
-#
-#lqr_grad_err = np.max(np.abs( lqr_gd - gd )) / np.max( gd )
-#tps_grad_err = np.max(np.abs( tps_gd - gd )) / np.max( gd )
-#
+#Define test density
+A = 1
+B = 10
+C = 1
+P = 0.05
+test_dense = test_post(A,B,C,P)
+
+
+#Get interpol/approximating sets
+x = npr.uniform(-15,15,300)
+y = npr.uniform(-15,15,300)
+
+S = np.array([x,y]).T
+fS = test_dense.evaluate( [x,y] )
+
+#Time the initialization of both methods
+print('Init LQR')
+start_time = time.time()
+lqr_test = local_quad_reg(S, fS)
+lqr_init_time = time.time() - start_time
+
+print('Init TPS')
+start_time = time.time()
+tps_test = thin_plate(S, fS, lam = 1e-7, lr_tol = 1.2)
+tps_init_time = time.time() - start_time
+
+def lqr_dense(x,y):
+    return( lqr_test.evaluate( np.array([x,y]) ) )
+
+def tps_dense(x,y):
+    return( tps_test.evaluate( np.array([x,y]) ) )
+
+#Testing grid
+xi = np.linspace(-6,6,100)
+yi = np.linspace(-6,6,100)
+
+#Time the calculation of interp/approx vals and grad on testing grid
+print('Calculating LQR interp density')
+start_time = time.time()
+lqr_d = np.reshape([lqr_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
+lqr_gd = np.reshape([ npla.norm( grad([x,y], lqr_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
+lqr_time = time.time() - start_time
+
+print('Calculating TPS interp density')
+start_time = time.time()
+tps_d = np.reshape([tps_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
+tps_gd = np.reshape([ npla.norm( grad([x,y], tps_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
+tps_time = time.time() - start_time
+
+#For error calcs
+print('Calculating true density')
+start_time = time.time()
+d = np.reshape([test_dense.evaluate([x,y]) for x in xi for y in yi], [len(xi), len(yi)] )
+gd = np.reshape([ npla.norm( grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)] )
+true_time = time.time() - start_time
+
+#Check max val and grad error
+lqr_err = np.max(np.abs( (lqr_d - d))) / np.max( np.abs(d) )
+tps_err = np.max(np.abs( (tps_d - d))) / np.max( np.abs(d) )
+
+lqr_grad_err = np.max(np.abs( lqr_gd - gd )) / np.max( gd )
+tps_grad_err = np.max(np.abs( tps_gd - gd )) / np.max( gd )
+
 #Evaluate how lambda effects err
 #print('Testing lambda vs. err')
 #lams = [1e-10, 1e-7,1e-4, 1e-1, 1, 10, 100]
@@ -395,73 +395,63 @@ class thin_plate:
 #    lam_grad_err.append( np.max(np.abs( tps_gd_lam - gd )) / np.max( gd ) )
 #    
 
-##Test pushforward error
-#print('Testing pushforward err')
-#test_n = 100
-#lqr_ham_err = []
-#tps_ham_err = []
-#
-#def lqr_pot(z):
-#    [x,y] = z
-#    return( -1*np.log( np.abs(lqr_dense(x,y)) ) )
-#
-#def tps_pot(z):
-#    [x,y] = z
-#    return( -1*np.log( np.abs(tps_dense(x,y)) ) )
-#
-#def test_pot(z):
-#    return( -1*np.log( np.abs(test_dense.evaluate(z)) ) )
-#
-#def path_dist(x):
-#    dist = 0
-#    
-#    for i in range(1, x.shape[0]):
-#        dist += npla.norm( x[i] - x[i-1] )
-#
-#    return(dist)
-#        
-#
-#h = 1e-5
-#for unused_index in range(0,test_n):
-#    #steps = np.random.choice(range(1,3))
-#    steps = np.random.choice( range(10,100) )
-#
-#    lqr_x0 = np.array([ np.random.uniform(-6,6) for unused2 in range(0,4) ])
-#    tps_x0 = lqr_x0.copy()
-#    test_x0 = tps_x0.copy()
-#
-#    lqr_path = [lqr_x0]
-#    tps_path = [tps_x0]
-#    test_path = [test_x0]
-#
-#    
-#    for i in range(0,steps):
-#        print([unused_index,i, steps])
-#        lqr_x0 = lpfrg_pshfwd(lqr_x0, h, lqr_pot, np.eye(2))
-#        tps_x0 = lpfrg_pshfwd(lqr_x0, h, tps_pot, np.eye(2))
-#        test_x0 = lpfrg_pshfwd(lqr_x0, h, test_pot, np.eye(2))
-#
-#        lqr_path.append(lqr_x0)
-#        tps_path.append(tps_x0)
-#        test_path.append(test_x0)
-#
-#    lqr_ham_err.append( sum( npla.norm( np.array(lqr_path) - np.array(test_path) , axis = 1 ) ) / path_dist( np.array(test_path) ) )
-#    tps_ham_err.append( sum( npla.norm( np.array(tps_path) - np.array(test_path) , axis = 1 ) ) / path_dist( np.array(test_path) ) )
-#
-#print( np.mean(lqr_ham_err) )
-#print( np.mean(tps_ham_err) )
-#
+#Test pushforward error
+print('Testing pushforward err')
+test_n = 100
+lqr_ham_err = []
+tps_ham_err = []
 
-#def lpfrg_pshfwd(x0, h, V, M):
-#    d = int(len(x0)/2.)
-#    [q0, p0] = [ x0[0:d], x0[ d:(2*d + 1) ] ]
-#
-#    pt = p0 - (h/2.)*grad(q0,V)
-#    qt = q0 + h*npla.inv(M)*pt
-#    pt = pt - (h/2.)*grad(qt,V)
-#
-#    return( np.array( list(qt) + list(pt) ) )    
-#
+def lqr_pot(z):
+    [x,y] = z
+    return( -1*np.log( np.abs(lqr_dense(x,y)) ) )
+
+def tps_pot(z):
+    [x,y] = z
+    return( -1*np.log( np.abs(tps_dense(x,y)) ) )
+
+def test_pot(z):
+    return( -1*np.log( np.abs(test_dense.evaluate(z)) ) )
+
+def path_dist(x):
+    dist = 0
+    
+    for i in range(1, x.shape[0]):
+        dist += npla.norm( x[i] - x[i-1] )
+
+    return(dist)
+        
+
+h = 1e-2
+for unused_index in range(0,test_n):
+    #steps = np.random.choice(range(1,3))
+    steps = np.random.choice( range(10,100) )
+
+    lqr_x0 = np.array([ np.random.uniform(-6,6) for unused2 in range(0,4) ])
+    tps_x0 = lqr_x0.copy()
+    test_x0 = tps_x0.copy()
+
+    lqr_path = [lqr_x0]
+    tps_path = [tps_x0]
+    test_path = [test_x0]
+
+    
+    for i in range(0,steps):
+        print([unused_index,i, steps])
+        lqr_x0 = lpfrg_pshfwd(lqr_x0, h, lqr_pot, np.eye(2))
+        tps_x0 = lpfrg_pshfwd(lqr_x0, h, tps_pot, np.eye(2))
+        test_x0 = lpfrg_pshfwd(lqr_x0, h, test_pot, np.eye(2))
+
+        lqr_path.append(lqr_x0)
+        tps_path.append(tps_x0)
+        test_path.append(test_x0)
+
+    lqr_ham_err.append( sum( npla.norm( np.array(lqr_path) - np.array(test_path) , axis = 1 ) ) / path_dist( np.array(test_path) ) )
+    tps_ham_err.append( sum( npla.norm( np.array(tps_path) - np.array(test_path) , axis = 1 ) ) / path_dist( np.array(test_path) ) )
+
+print( np.mean(lqr_ham_err) )
+print( np.mean(tps_ham_err) )
+
+
 ################
 #PLOTTING STUFF#
 ################    
