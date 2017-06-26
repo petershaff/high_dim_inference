@@ -7,6 +7,8 @@ import scipy.linalg as spla
 import scipy.stats as sps
 import scipy.interpolate as spi
 
+import matplotlib
+matplotlib.use('PS')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -33,7 +35,7 @@ def grad(x, func, grad_grid_width = 1e-2):
 
     grads = np.array(np.gradient(grid_vals, grad_grid_width, axis = 1))
     
-    return(grads[:,2])    
+    return(grads[:,2])
     
 #1 step of the leapfrog integration with potential energy function V under quadratic kinetic energy
 def lpfrg_pshfwd(x0, h, V, M):
@@ -54,7 +56,7 @@ class test_post:
         self.b = B
         self.c = C
         self.p = P
-
+        
     def evaluate(self, z):
         [x,y] = z
         evaluate = np.exp( -1 * self.p * ( self.a * x**2 * y**2  +  x**2  +  y**2  -  self.b * x * y  -  self.c * x  - self.c * y ) )
@@ -112,7 +114,7 @@ class local_quad_reg:
 #            grad[i-1] = np.dot(self.Z, np.hstack([0, np.ones(self.d), 2*x]) * mask)
 #
 #        return(grad)
-#    
+#
     def neighbors(self, x):
         knn = skn.NearestNeighbors(n_neighbors = self.N)
         knn.fit(self.S)
@@ -127,7 +129,7 @@ class local_quad_reg:
 
         self.r_def = np.max( self.dists_def )
 
-    def interpolate_density(self, x):  
+    def interpolate_density(self, x):
         self.neighbors(x)
         
         self.W = np.sqrt( np.array([ min(1,x) for x in 1 - ( (self.dists[0] - self.r_def ) / self.r_def**3 )**3 ]) )
@@ -146,15 +148,14 @@ class local_quad_reg:
         
         
 #METHOD 2: RADIAL BASIS FUNCTIONS - THIN PLATE SPLINES
-#Define a class that fits a low-rank thin plate spline to scattered data sites S and function values fS with wiggliness penalized by lambda to derivative order m.  Follows Wood, 2002. 
-class thin_plate:
-    def __init__(self, S, fS, m = 2, lam = 1e-13, lr_tol = .999):
+#Implements a Thin Plate Spline as outlined by Ji and Kim (2013)
+class thin_plateV2:
+    def __init__(self, S, fS, m=2, lam = 1e-13, lr_tol = .999):
         self.timer = {}
         
         #Save the provided data internally, take some useful measurements
         self.S = S
         self.fS = fS
-        self.m = m
         self.lam = lam
         self.lr_tol = lr_tol
         
@@ -163,28 +164,17 @@ class thin_plate:
 
         #Compute the matrix T of multivariate monomials of degree <= m, in d variables (note: wood gives wrong formula for self.M, see: stars and bars problem)
         self.curr_time = time.time()
+        self.m = self.d+1
         self.M = sp.special.binom( self.m + self.d, self.d)
 
         if self.M >= self.n:
             raise ValueError('Not enough points in data set for this degree of smoothness, add more points or choose lower m')
 
-        self.T = np.zeros( [ int(self.n) , int(self.M) ] )
+        self.T = np.zeros( [ int(self.n) , int(self.m) ] )
 
         for i in range(0, self.n):
-            j = 0
+            self.T[i,:] = np.concatenate([ np.array([1]), self.S[i] ])
             
-            for mu in range(0, self.m+1):
-                hold = self.partitions(mu, self.d)
-
-                for k in range(0, int( sp.special.binom(mu + self.d - 1, mu) ) ):
-                    exp = next(hold)
-                    x = self.S[i]
-
-                    t = sum( map( lambda (x,y): pow(x,y), zip(x,exp) ) )
-
-                    self.T[i,j] = t 
-                    j += 1
-
         self.timer['Build T'] = time.time() - self.curr_time
         self.curr_time = time.time()
 
@@ -209,118 +199,92 @@ class thin_plate:
 
         self.timer['Build E'] = time.time() - self.curr_time
         self.curr_time = time.time()
-        #Calculate low-rank approx of E
-        self.approx_E()
-        self.timer['Low-rank approx E'] = time.time() - self.curr_time
-        self.curr_time = time.time()
-
-        #Calculate null space of T' U_k
-        self.null_space_T()
-        self.timer['Null space of T'] = time.time() - self.curr_time
-        self.curr_time = time.time()
 
         #Now reformulate and solve the approximate problem
-        self.X = np.dot( self.U_lr, np.dot(self.D_lr, self.Z) )
-        self.X = np.bmat([self.X, self.T])
-
-        self.W = np.dot( self.Z.T, np.dot( self.D_lr, self.Z))
-        l = int(self.k - self.M)
-        M = int(self.M)
-        self.W = np.bmat([[self.W,np.zeros([l,M])],[np.zeros([M,l]),np.zeros([M,M])]])
-
-        self.sol = sp.optimize.minimize( lambda z: npla.norm(self.fS - np.dot(self.X,z)) + self.lam*npla.norm(np.dot(z, np.dot(self.W,z).T)), np.random.rand(self.k))
-        self.b = self.sol.x
+        self.C = np.bmat([ [self.E, self.T], [np.transpose(self.T), np.zeros([self.m, self.m]) ] ])
+        self.y = np.concatenate([ self.fS, np.zeros([ self.m ]) ])
         
-        self.delta = np.dot(self.U_lr, np.dot(self.Z, self.b[:l]))
-        self.a = self.b[l:]
+        self.C_inv = npla.inv(self.C)
+        self.gamma = np.transpose(np.dot( self.C_inv, self.y ) )
         
-        self.timer['Solving LS problem'] = time.time() - self.curr_time
+        self.delta = self.gamma[:self.n, :]
+        self.a = self.gamma[self.n:, :]
 
     def evaluate(self, x):
         E = np.array([ self.eta(npla.norm(x - s)) for s in self.S])
-        T = np.zeros( int(self.M) ) 
-
-        j = 0
-        for mu in range(0, self.m+1):
-            hold = self.partitions(mu, self.d)
-            for k in range(0, int( sp.special.binom(mu + self.d - 1, mu) ) ):
-                exp = next(hold)
-                t = sum( map( lambda (x,y): pow(x,y), zip(x,exp) ) )
-
-                T[j] = t
-                j += 1
-
-        return( np.sum( np.dot(E, self.delta) + np.dot(T, self.a) ) )
-
-    def grad(self, z, grad_grid_width = 1e-2):
-        hold = grad(z, self.evaluate, grad_grid_width)
-        return(hold)
-
-#        grad = np.zeros(self.d)
-#
-#        for i in range(0, self.d):
-#            grad_E = np.array([ self.eta_prime(npla.norm(x - S[i])) * 2*(x[i]-s[i])/npla.norm(x - s) for s in self.S])
-#
-#            grad_T = np.zeros( int(self.M) ) 
-#            j = 0
-#            for mu in range(0, self.m+1):
-#                hold = self.partitions(mu, self.d)
-#                for k in range(0, int( sp.special.binom(mu + self.d - 1, mu) ) ):
-#                    exp = next(hold)
-#
-#                    if exp[i] != 0:
-#                        exp[i] = exp[i] - 1
-#                        t = map( lambda (x,y): pow(x,y), zip(x,exp) )
-#                        t[i] = (exp[i]+1)*t[i]
-#                        t = sum(t)
-#
-#                    else:
-#                        t = 0
-#                
-#                    grad_T[j] = t
-#                    j += 1
-#              
-#            grad[i] = np.dot(grad_E, self.delta) + np.dot(grad_T, self.a)
-#
-#        return(grad)
-#
-    def partitions(self, n, k):
-        for c in it.combinations(range(n+k-1), k-1):
-            yield [b-a-1 for a, b in zip((-1,)+c, c+(n+k-1,))]
-
-    def approx_E(self):
-        [self.D, self.U] = npla.eig(self.E)
-
-        sort_inds = np.argsort( np.abs(self.D) )[::-1]
-
-        self.U = self.U[:, sort_inds]
-        self.D = self.D[sort_inds]
-
-        part_sums = np.array([ sum(np.abs(self.D)[:i]) for i in range(0,len(self.D))])
-        part_sums = part_sums/sum(np.abs(self.D))
-        low_rank_ind = part_sums < self.lr_tol
-
-        self.k = np.sum(low_rank_ind)
-        while self.k <= self.M:
-            low_rank_ind[k] = True
-            self.k = np.sum(low_rank_ind)
+        T = np.concatenate([ np.array([1]), x ])
         
-        self.D_lr = np.diag(self.D[low_rank_ind])
-        self.U_lr = self.U[:,low_rank_ind]
+        return( np.sum( np.dot(E, self.delta ) + np.dot( T, self.a) ) )
 
-        self.E_lr = np.dot( np.dot(self.U_lr, self.D_lr), self.U_lr.T )
-        self.low_rank_err = npla.norm(self.E - self.E_lr, 'fro')/npla.norm(self.E, 'fro')
+    def grad(self, x):
+        grad = np.zeros(self.d)
 
-    def null_space_T(self):
-        [self.Q, self.R] = npla.qr( np.dot(self.U_lr.T, self.T), 'complete')
-        self.Z = self.Q[:, int(self.M):]
+        for i in range(0, self.d):
+            grad_E = np.array([ self.eta_prime(npla.norm(x - S[i])) * 2*(x[i]-s[i])/npla.norm(x - s) for s in self.S])
+
+            grad_T = np.zeros( int(self.M) )
+            j = 0
+            for mu in range(0, self.m+1):
+                hold = self.partitions(mu, self.d)
+                for k in range(0, int( sp.special.binom(mu + self.d - 1, mu) ) ):
+                    exp = next(hold)
+
+                    if exp[i] != 0:
+                        exp[i] = exp[i] - 1
+                        t = map( lambda (x,y): pow(x,y), zip(x,exp) )
+                        t[i] = (exp[i]+1)*t[i]
+                        t = sum(t)
+
+                    else:
+                        t = 0
+                
+                    grad_T[j] = t
+                    j += 1
+              
+            grad[i] = np.dot(grad_E, self.delta) + np.dot(grad_T, self.a)
+
+        return(grad)
+      
+    def rank_one_add(self, x, fx):
+      S = np.array( list(self.S).append(x) )
+      fS = np.array( list(self.S).append( fx ) )
+      
+      u = np.array([ self.eta( npla.norm(x-y) ) for y in self.S ])
+      v = np.concatenate([ np.array([1]), x ])
+      u_t = np.concatenate([u,v])
+      self.u_t = u_t
+    
+      b = 1./ (0. - np.dot( u_t, np.transpose( np.dot(self.C_inv, u_t) ) ))
+      b = b[0,0]
+      self.b = b
+      X = self.gamma + b*np.dot(self.C_inv, np.dot(np.outer(u_t,u_t), self.gamma)) - np.transpose(b*np.dot(self.C_inv, u_t)*fx)
+      self.X = X
+      self.rand = np.transpose(np.array([-b*np.dot(u_t, self.gamma) + b*fx ]) )
+      X = np.concatenate([ X, np.transpose(np.array([-b*np.dot(u_t, self.gamma) + b*fx ]) )[0] ])
+      
+      E = np.array( range(0,self.n+self.m+1) )
+      E[ self.n ] = self.n + self.m
+      E[ self.n + self.m ] = self.n
+      E = np.eye( self.n + self.m + 1 )[E]
+      
+      self.gamma = np.dot( np.linalg.inv(E), X )
+    
+      self.n += 1
+      self.delta = self.gamma[:self.n]
+      self.a = self.gamma[self.n:]
+      
+      
+    def rank_one_remove():
+      print('TBD')
+      
+    #B^-1 = (A - v^t v)^-1 = A^-1 + (1 - v^t A^-1 v)
 
 #Define test density
 A = 1
-B = 10
+b = 10
 C = 1
 P = 0.05
-test_dense = test_post(A,B,C,P)
+test_dense = test_post(A,b,C,P)
 
 #Get interpol/approximating sets
 x = npr.uniform(-15,15,300)
@@ -330,13 +294,13 @@ S = np.array([x,y]).T
 fS = test_dense.evaluate( [x,y] )
 
 #Time the initialization of both methods
-print('Init LQR')
-start_time = time.time()
-lqr_test = local_quad_reg(S, fS)
-lqr_init_time = time.time() - start_time
+#print('Init LQR')
+#start_time = time.time()
+#lqr_test = local_quad_reg(S, fS)
+#lqr_init_time = time.time() - start_time
 
-print('Init TPS')
-start_time = time.time()
-tps_test = thin_plate(S, fS, lam = 1e-7, lr_tol = 1.2)
-tps_init_time = time.time() - start_time
+#print('Init TPS')
+#start_time = time.time()
+#tps_test = thin_plate(S, fS, lam = 1e-7, lr_tol = 1.2)
+#tps_init_time = time.time() - start_time
 

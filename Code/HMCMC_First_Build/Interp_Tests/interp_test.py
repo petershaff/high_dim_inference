@@ -7,6 +7,8 @@ import scipy.linalg as spla
 import scipy.stats as sps
 import scipy.interpolate as spi
 
+import matplotlib
+matplotlib.use('PS')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -33,7 +35,7 @@ def grad(x, func, grad_grid_width = 1e-2):
 
     grads = np.array(np.gradient(grid_vals, grad_grid_width, axis = 1))
     
-    return(grads[:,2])    
+    return(grads[:,2])
     
 #1 step of the leapfrog integration with potential energy function V under quadratic kinetic energy
 def lpfrg_pshfwd(x0, h, V, M):
@@ -123,7 +125,7 @@ class local_quad_reg:
 
         self.r_def = np.max( self.dists_def )
 
-    def interpolate_density(self, x):  
+    def interpolate_density(self, x):
         self.neighbors(x)
         
         self.W = np.sqrt( np.array([ min(1,x) for x in 1 - ( (self.dists[0] - self.r_def ) / self.r_def**3 )**3 ]) )
@@ -142,7 +144,7 @@ class local_quad_reg:
         
         
 #METHOD 2: RADIAL BASIS FUNCTIONS - THIN PLATE SPLINES
-#Define a class that fits a low-rank thin plate spline to scattered data sites S and function values fS with wiggliness penalized by lambda to derivative order m.  Follows Wood, 2002. 
+#Define a class that fits a low-rank thin plate spline to scattered data sites S and function values fS with wiggliness penalized by lambda to derivative order m.  Follows Wood, 2002.
 class thin_plate:
     def __init__(self, S, fS, m = 2, lam = 1e-13, lr_tol = .999):
         self.timer = {}
@@ -178,7 +180,7 @@ class thin_plate:
 
                     t = sum( map( lambda (x,y): pow(x,y), zip(x,exp) ) )
 
-                    self.T[i,j] = t 
+                    self.T[i,j] = t
                     j += 1
 
         self.timer['Build T'] = time.time() - self.curr_time
@@ -234,7 +236,7 @@ class thin_plate:
 
     def evaluate(self, x):
         E = np.array([ self.eta(npla.norm(x - s)) for s in self.S])
-        T = np.zeros( int(self.M) ) 
+        T = np.zeros( int(self.M) )
 
         j = 0
         for mu in range(0, self.m+1):
@@ -254,7 +256,7 @@ class thin_plate:
         for i in range(0, self.d):
             grad_E = np.array([ self.eta_prime(npla.norm(x - S[i])) * 2*(x[i]-s[i])/npla.norm(x - s) for s in self.S])
 
-            grad_T = np.zeros( int(self.M) ) 
+            grad_T = np.zeros( int(self.M) )
             j = 0
             for mu in range(0, self.m+1):
                 hold = self.partitions(mu, self.d)
@@ -308,6 +310,102 @@ class thin_plate:
         [self.Q, self.R] = npla.qr( np.dot(self.U_lr.T, self.T), 'complete')
         self.Z = self.Q[:, int(self.M):]
 
+#Implements a Thin Plate Spline as outlined by Ji and Kim (2013)
+class thin_plateV2:
+    def __init__(self, S, fS, m=2, lam = 1e-13, lr_tol = .999):
+        self.timer = {}
+        
+        #Save the provided data internally, take some useful measurements
+        self.S = S
+        self.fS = fS
+        self.lam = lam
+        self.lr_tol = lr_tol
+        
+        self.n = self.S.shape[0]
+        self.d = self.S.shape[1]
+
+        #Compute the matrix T of multivariate monomials of degree <= m, in d variables (note: wood gives wrong formula for self.M, see: stars and bars problem)
+        self.curr_time = time.time()
+        self.m = self.d + 1
+        self.M = sp.special.binom( self.m + self.d, self.d)
+
+        if self.M >= self.n:
+            raise ValueError('Not enough points in data set for this degree of smoothness, add more points or choose lower m')
+
+        self.T = np.zeros( [ int(self.n) , int(self.m) ] )
+
+        for i in range(0, self.n):
+            self.T[i,:] = np.concatenate([ np.array([1]), self.S[i] ])
+            
+        self.timer['Build T'] = time.time() - self.curr_time
+        self.curr_time = time.time()
+
+        #Compute the matrix E of RBF values between points
+        if self.d%2 == 0:
+            self.eta = lambda x: np.log(x)*pow(x,2*self.m-self.d)*pow(-1,self.m+1+0.5*self.d)/(pow(2,2*self.m - 1)*pow(np.pi,0.5*self.d)*math.factorial(self.m-1)*math.factorial(self.m-0.5*self.d))
+            self.eta_prime = lambda x: pow(x,2*self.m-self.d - 1)*( 1 + np.log(x)*(2*self.m-self.d) )*pow(-1, self.m + 0.5*self.d +1) / (pow(2, 2*self.m-1)*pow(np.pi, 0.5*self.d)*math.factorial( self.m - 1 )*math.factorial( self.m - 0.5*self.d) )
+            
+        elif self.d%2 == 1:
+            self.eta = lambda x: pow(x,2*self.m-d)*math.gamma(0.5*self.d - self.m)/(pow(2,2*self.m)*pow(np.pi,0.5*self.d)*math.factorial(self.m-1))
+            self.eta_prime = lambda x: (2*self.m-d)*pow(x,2*self.m-d-1)*math.gamma(0.5*self.d - self.m)/(pow(2,2*self.m)*pow(np.pi,0.5*self.d)*math.factorial(self.m-1))
+
+        self.E = np.zeros( [self.n, self.n] )
+        
+        for i in range(0,self.n):
+            for j in range(0,self.n):
+                if i == j:
+                    self.E[i,j] = 0
+
+                else:
+                    self.E[i,j] = self.eta( npla.norm(self.S[i,:]-self.S[j,:]) )
+
+        self.timer['Build E'] = time.time() - self.curr_time
+        self.curr_time = time.time()
+
+        #Now reformulate and solve the approximate problem
+        self.C = np.bmat([ [self.E, self.T], [np.transpose(self.T), np.zeros([self.m, self.m ]) ] ])
+        self.y = np.concatenate([ self.fS, np.zeros([ self.m ]) ])
+        
+        self.C_inv = npla.inv(self.C)
+        self.gamma = np.dot( self.C_inv, self.y )
+        
+        self.delta = self.gamma[:, :self.n]
+        self.a = self.gamma[:, self.n:]
+
+    def evaluate(self, x):
+        E = np.array([ self.eta(npla.norm(x - s)) for s in self.S])
+        T = np.concatenate([ np.array([1]), x ])
+        
+        return( np.sum( np.dot(E, np.transpose(self.delta) ) + np.dot( T, np.transpose(self.a) ) ) )
+
+    def grad(self, x):
+        grad = np.zeros(self.d)
+
+        for i in range(0, self.d):
+            grad_E = np.array([ self.eta_prime(npla.norm(x - S[i])) * 2*(x[i]-s[i])/npla.norm(x - s) for s in self.S])
+
+            grad_T = np.zeros( int(self.M) )
+            j = 0
+            for mu in range(0, self.m+1):
+                hold = self.partitions(mu, self.d)
+                for k in range(0, int( sp.special.binom(mu + self.d - 1, mu) ) ):
+                    exp = next(hold)
+
+                    if exp[i] != 0:
+                        exp[i] = exp[i] - 1
+                        t = map( lambda (x,y): pow(x,y), zip(x,exp) )
+                        t[i] = (exp[i]+1)*t[i]
+                        t = sum(t)
+
+                    else:
+                        t = 0
+                
+                    grad_T[j] = t
+                    j += 1
+              
+            grad[i] = np.dot(grad_E, self.delta) + np.dot(grad_T, self.a)
+
+        return(grad)
 
 ################################
 #TEST AND PLOT THE APPROXIMANTS#
@@ -336,7 +434,7 @@ lqr_init_time = time.time() - start_time
 
 print('Init TPS')
 start_time = time.time()
-tps_test = thin_plate(S, fS, lam = 1e-7, lr_tol = 1.2)
+tps_test = thin_plateV2(S, fS, lam = 1e-7, lr_tol = 1.2)
 tps_init_time = time.time() - start_time
 
 def lqr_dense(x,y):
@@ -350,11 +448,11 @@ xi = np.linspace(-6,6,100)
 yi = np.linspace(-6,6,100)
 
 #Time the calculation of interp/approx vals and grad on testing grid
-print('Calculating LQR interp density')
-start_time = time.time()
-lqr_d = np.reshape([lqr_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
-lqr_gd = np.reshape([ npla.norm( grad([x,y], lqr_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
-lqr_time = time.time() - start_time
+#print('Calculating LQR interp density')
+#start_time = time.time()
+#lqr_d = np.reshape([lqr_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
+#lqr_gd = np.reshape([ npla.norm( grad([x,y], lqr_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
+#lqr_time = time.time() - start_time
 
 print('Calculating TPS interp density')
 start_time = time.time()
@@ -384,16 +482,16 @@ tps_grad_err = np.max(np.abs( tps_gd - gd )) / np.max( gd )
 #for l in lams:
 #    print(l)
 #    tps_lam_test = thin_plate(S, fS, lam = l, lr_tol = 1.2)
-#
+
 #    def tps_lam_dense(x,y):
 #        return( tps_test.evaluate( np.array([x,y]) ) )
-#
+
 #    tps_d_lam = np.reshape([tps_lam_dense(x,y) for x in xi for y in yi], [len(xi), len(yi)])
 #    tps_gd_lam = np.reshape([ npla.norm( grad([x,y], tps_test.evaluate) - grad([x,y], test_dense.evaluate) ) for x in xi for y in yi ], [len(xi), len(yi)])
-#
+
 #    lam_err.append( np.max(np.abs( (tps_d_lam - d))) / np.max( np.abs(d) ) )
 #    lam_grad_err.append( np.max(np.abs( tps_gd_lam - gd )) / np.max( gd ) )
-#    
+
 
 #Test pushforward error
 print('Testing pushforward err')
@@ -454,7 +552,7 @@ print( np.mean(tps_ham_err) )
 
 ################
 #PLOTTING STUFF#
-################    
+################
 #[xi, yi] = np.meshgrid(xi, yi)
 #fig = plt.figure()
 #ax = fig.add_subplot(111, projection='3d')

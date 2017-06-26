@@ -29,7 +29,7 @@
 \begin{document}
 \maketitle
 \section{Brief Intro}
-We would like to design an MCMC algorithm that combines Hamiltonian MCMC (HMCMC) \parencite{neal_mcmc_2012,betancourt_geometric_2014,betancourt_conceptual_2017} and the approximate posterior + refinement approach of the Shrinking Bullseye \parencite{conrad_accelerating_2015}. 
+We would like to design an MCMC algorithm that combines Hamiltonian MCMC (HMCMC) \parencite{neal_mcmc_2012,betancourt_geometric_2014,betancourt_conceptual_2017} and the approximate posterior + refinement approach of the Shrinking Bullseye \parencite{conrad_accelerating_2015}.
 
 The basic skeleton of an HMCMC algorithm procedes as follows:
 \begin{enumerate}
@@ -38,7 +38,7 @@ The basic skeleton of an HMCMC algorithm procedes as follows:
 \item We then numerically integrate the following Hamiltonian with step size $h$ for $s$ steps (the integration time $sh$ is a free parameter for the sampler, and needs to be chosen wisely based on the geometry of the posterior), with initial conditions $(\vec{q}_n, \vec{p}_n)$:
 \begin{equation}
 \begin{split}
-\dot{\vec{q}} &= M^{-1} \vec{p} \\ 
+\dot{\vec{q}} &= M^{-1} \vec{p} \\
 \dot{\vec{p}} &= - \nabla ln(\pi(\vec{q}))\\
 \end{split}
 \end{equation}
@@ -83,10 +83,20 @@ Averaging over the random initial conditions and step sizes we get $E[\rho_\text
 \caption{Histogram of path errors for (a) the LQR approximated potential and (b) the TPS approximated potential}
 \end{figure}
 
+\section{First Steps towards an Approximate HMCMC}
+Based on these results I decided to go ahead with drafting a Hamiltonian MCMC sampler using the TPS approximated posterior.  Currently the steps of this algorithm are very similar to the Shrinking Bullseye:
+\begin{enumerate}
+\item Starting at point $x$ we propose a point $x'$ by numerically integrating a Hamiltonian system on a potential energy surface $V(q) = -\text{ln}(\hat{\pi}(q)$ with a random initial momentumand quadratic kinetic energy (ie. $K(p) = p^T M P$ where $M$ is a mass matrix).
+\item To check if $S$ requires additional points we pool the $N$ nearest points to every step in the path from Step 1.  That is, let $q^{i}$ be the $i^{\text{th}}$ step where $i = 1,...,s$ in the Leapfrog integration from Step 1, then $B_N(q^{(i)})$ are its $N$ nearest neighbors.  We then take $B = \bigcup\limits_{i=1}^{s}B_N(q^{i})$.
+\item Now perform some kind of cross validation by repeating Step 1 with $\hat{\pi}$ now approximated using $S/B \cup B_l$ where $B_l$ is a random subset $B_l \subset B$ to get $K$ CV candidate points $x_k'$.  Evaluate the acceptance probability $\alpha(x,x_k')$ for each CV candidate, if $\text{max}_k \alpha(x, x_k') - \text{min}_k \alpha(x, x_k') > \epsilon$ where $\epsilon$ is some preset tolerance then we add points to $S$.  IF $\text{max}_k \alpha(x, x_k') - \text{min}_k \alpha(x, x_k') < \epsilon$ then we add no refinements.
+\item  If refinements have been performed go to Step 1 and repeat from there, otherwise proceed to accept $x'$ with probability $\alpha(x,x')$
+\end{enumerate}
+The issue I'm hitting right now is the refinements, it's pretty expensive to just fit a fresh TPS for each CV fold of B so the algorithm would be extremely slow.  I've found some stuff on rank one updates of the coefficients that will bring the cost of fitting a TPS down from $\mathcal{O}(n^3)$ to $\mathcal{O}(n^2)$, since I'm working with around $n = 300$ interpolating points this should be a pretty big speedup.
+
 \section{Goals for Next Week}
 \begin{itemize}
-\item Diagnose and fix RBF interpolation scheme (may have to get back in touch with Ian for help with this)
-\item Add Greg's changes to the variance reduction paper, meet with him again on Friday to discuss them.
+\item Implementing rank one updates for the refinement step of the HMCMC with Approximated Posterior
+\item Polish up the variance reduction paper, still needs a discussion section so that's my immediate goal.
 \end{itemize}
 
 \section{Appendix: Approximation Criteria}
@@ -102,7 +112,7 @@ One step in the integration of (1) using the leapfrog with step-size $h$ takes t
 \begin{equation}
 \begin{split}
 \vec{p}_{t+h/2} &= \vec{p}_t - (\frac{h}{2})  \nabla ln(\pi(\vec{q_t}))\\
-\vec{q}_h &= \vec{q}_t + (h)M^{-1} \vec{p}_{t+h/2} \\ 
+\vec{q}_h &= \vec{q}_t + (h)M^{-1} \vec{p}_{t+h/2} \\
 \vec{p}_h &= \vec{p}_{t+h/2} - (\frac{h}{2})  \nabla ln(\pi(\vec{q_{t+h}})) \\
 \end{split}
 \end{equation}
