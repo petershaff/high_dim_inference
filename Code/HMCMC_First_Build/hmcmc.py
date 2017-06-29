@@ -131,3 +131,7 @@ test = lilypad_mcmc(test_dense.evaluate, S, {})
 #refine = test.refine_test(cand,path)
 #test.accept_prob(path[0],path[1])
 #run_time = run_time - time.time()
+
+x_test = np.array([1.5,2.5])
+fx_test = test_dense.evaluate(x_test)
+test.approx.rank_one_add( x_test, fx_test)

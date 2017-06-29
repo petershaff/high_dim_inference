@@ -200,7 +200,7 @@ class thin_plateV2:
         self.timer['Build E'] = time.time() - self.curr_time
         self.curr_time = time.time()
 
-        #Now reformulate and solve the approximate problem
+        #Now reformulate and solve the least squares problem problem
         self.C = np.bmat([ [self.E, self.T], [np.transpose(self.T), np.zeros([self.m, self.m]) ] ])
         self.y = np.concatenate([ self.fS, np.zeros([ self.m ]) ])
         
