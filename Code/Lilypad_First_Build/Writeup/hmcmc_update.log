@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.2.13)  14 JUN 2017 12:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.2.13)  30 JUN 2017 12:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -948,15 +948,15 @@ File: ./Figs/test_dense.png Graphic file (type png)
 <use ./Figs/test_dense.png>
 Package pdftex.def Info: ./Figs/test_dense.png used on input line 69.
 (pdftex.def)             Requested size: 216.81168pt x 179.47188pt.
- [2 <./Figs/test_dense.png (PNG copy)>]
-<./Figs/lqr_ham_hist.png, id=24, 462.528pt x 346.896pt>
+ [2]
+<./Figs/lqr_ham_hist.png, id=25, 462.528pt x 346.896pt>
 File: ./Figs/lqr_ham_hist.png Graphic file (type png)
 
 <use ./Figs/lqr_ham_hist.png>
 Package pdftex.def Info: ./Figs/lqr_ham_hist.png used on input line 80.
 (pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
 
-<./Figs/tps_ham_hist.png, id=26, 462.528pt x 346.896pt>
+<./Figs/tps_ham_hist.png, id=27, 462.528pt x 346.896pt>
 File: ./Figs/tps_ham_hist.png Graphic file (type png)
 
 <use ./Figs/tps_ham_hist.png>
@@ -967,35 +967,58 @@ Overfull \hbox (33.55896pt too wide) in paragraph at lines 79--83
  [][] 
  []
 
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 88.
-(/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
+[3 <./Figs/test_dense.png (PNG copy)> <./Figs/lqr_ham_hist.png> <./Figs/tps_ham
+_hist.png>]
+Overfull \hbox (0.62599pt too wide) in paragraph at lines 92--93
+[]\OT1/cmr/m/n/12 Following Wend-land here (2007, ``Com-pu-ta-tional As-pects o
+f Ra-dial Ba-sis Func-
+ []
+
+[4]
+Overfull \hbox (8.49313pt too wide) in paragraph at lines 129--130
+[]\OT1/cmr/m/n/12 So that we can use the ba-sic ma-chin-ery of rank one up-date
+s we write $\OML/cmm/m/it/12 C[] \OT1/cmr/m/n/12 = (\OML/cmm/m/it/12 C[]C\OT1/c
+mr/m/n/12 )[]\OML/cmm/m/it/12 C[]$\OT1/cmr/m/n/12 .
+ []
+
+
+Overfull \hbox (23.03494pt too wide) in paragraph at lines 131--132
+[]\OT1/cmr/m/n/12 We want to cal-cu-late $(\OML/cmm/m/it/12 C[]C[]\OT1/cmr/m/n/
+12 )[]\OML/cmm/m/it/12 C[]y[]$\OT1/cmr/m/n/12 , which we will do by cal-cu-lat-
+ing $(\OML/cmm/m/it/12 C[]C[]\OT1/cmr/m/n/12 )[]$
+ []
+
+[5]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 175.
+
+ (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 88.
- [3 <./Figs/lqr_ham_hist.png> <./Figs/tps_ham_hist.png>]
-Overfull \hbox (7.98433pt too wide) in paragraph at lines 111--111
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 175.
+ [6]
+Overfull \hbox (7.98433pt too wide) in paragraph at lines 198--198
 [][]\OT1/cmr/m/n/12 Buhmann, Mar-tin D. (2003). \OT1/cmr/m/it/12 Ra-dial Ba-sis
  Func-tions: The-ory and Im-ple-men-ta-tions\OT1/cmr/m/n/12 . Google-
  []
 
-[4]
-Overfull \hbox (4.58214pt too wide) in paragraph at lines 111--111
+
+Overfull \hbox (4.58214pt too wide) in paragraph at lines 198--198
 \OT1/cmtt/m/n/12 https : / / www . cambridge . org / core / journals / journal 
 -[] of -[] applied -[] probability /
  []
 
-[5] (./hmcmc_update.aux)
+[7] (./hmcmc_update.aux)
 Package logreq Info: Writing requests to 'hmcmc_update.run.xml'.
 \openout1 = `hmcmc_update.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 10716 strings out of 494910
- 173894 string characters out of 6179836
- 670617 words of memory out of 5000000
- 13836 multiletter control sequences out of 15000+600000
- 13559 words of font info for 53 fonts, out of 8000000 for 9000
+ 10721 strings out of 494910
+ 173947 string characters out of 6179836
+ 672617 words of memory out of 5000000
+ 13839 multiletter control sequences out of 15000+600000
+ 14487 words of font info for 56 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  44i,19n,45p,1701b,1021s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
@@ -1016,10 +1039,10 @@ exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-d
 ist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on hmcmc_update.pdf (5 pages, 291910 bytes).
+Output written on hmcmc_update.pdf (7 pages, 314813 bytes).
 PDF statistics:
- 102 PDF objects out of 1000 (max. 8388607)
- 70 compressed objects within 1 object stream
+ 110 PDF objects out of 1000 (max. 8388607)
+ 76 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

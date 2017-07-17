@@ -501,11 +501,11 @@ tps_ham_err = []
 
 def lqr_pot(z):
     [x,y] = z
-    return( -1*np.log( np.abs(lqr_dense(x,y)) ) )
+    return( -1*np.log( np.abs( lqr_dense(x,y) ) ) )
 
 def tps_pot(z):
     [x,y] = z
-    return( -1*np.log( np.abs(tps_dense(x,y)) ) )
+    return( -1*np.log( np.abs( tps_dense(x,y) ) ) )
 
 def test_pot(z):
     return( -1*np.log( np.abs(test_dense.evaluate(z)) ) )

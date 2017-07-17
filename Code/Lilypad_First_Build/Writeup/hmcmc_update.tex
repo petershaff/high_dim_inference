@@ -29,12 +29,12 @@
 \begin{document}
 \maketitle
 \section{Brief Intro}
-We would like to design an MCMC algorithm that combines Hamiltonian MCMC (HMCMC) \rojo{why didn't I use HMC} \parencite{neal_mcmc_2012,betancourt_geometric_2014,betancourt_conceptual_2017} and the approximate posterior + refinement approach of the Shrinking Bullseye \parencite{conrad_accelerating_2015}.  This will hopefully allow basically a fast and flexible ``black box'' tool for fast simulation-based inference with some arbitary mathematical model; looking specifically for usage with ODE models from ecology but ideally this could be handy for any general application of simulation-oriented Bayesian stats.
+We would like to design an MCMC algorithm that combines Hamiltonian MCMC (HMCMC) \rojo{(why didn't I use HMC instead)} \parencite{neal_mcmc_2012,betancourt_geometric_2014,betancourt_conceptual_2017} and the approximate posterior + refinement approach of the Shrinking Bullseye \parencite{conrad_accelerating_2015}.  This will hopefully allow basically a fast and flexible ``black box'' tool for fast simulation-based inference with some arbitary mathematical model; looking specifically for usage with ODE models from ecology but ideally this could be handy for any general application of simulation-oriented Bayesian stats.
 
 The basic skeleton of an HMCMC algorithm procedes as follows:
 \begin{enumerate}
 \item Consider the sampler at point $\vec{q}_n$ in parameter space with posterior density $\pi(\vec{q} | \vec{y})$ where $\vec{y}$ is the observed data (supressed going forward) .
-\item Draw a momentum vector $\vec{p}_n$ from the distribution $\pi(\vec{p} | \vec{q} ) = \text{N}(\vec{p} |0, M)$ (ie. Eucliwhere $M$ is the mass matrix (in vanilla HMCMC this is usually chosen to be the covariance matrix of $\pi(\vec{q}|\vec{y})$ but for Riemanian HMCMC I believe one uses the Hessian of $\pi(\vec{q})$ with respect to $\vec{q}$ evaluated at $\vec{q}_n$, or something similar).
+\item Draw a momentum vector $\vec{p}_n$ from the distribution $\pi(\vec{p} | \vec{q} ) = \text{N}(\vec{p} |0, M)$ where $M$ is the mass matrix (in vanilla HMCMC this is usually chosen to be the covariance matrix of $\pi(\vec{q}|\vec{y})$ but for Riemanian HMCMC I believe one uses the Hessian of $\pi(\vec{q})$ with respect to $\vec{q}$ evaluated at $\vec{q}_n$, or something similar).
 \item We then numerically integrate the following Hamiltonian with step size $h$ for $s$ steps (the integration time $sh$ is a free parameter for the sampler, and needs to be chosen wisely based on the geometry of the posterior), with initial conditions $(\vec{q}_n, \vec{p}_n)$:
 \begin{equation}
 \begin{split}
@@ -83,27 +83,92 @@ Averaging over the random initial conditions and step sizes we get $E[\rho_\text
 \caption{Histogram of path errors for (a) the LQR approximated potential and (b) the TPS approximated potential}
 \end{figure}
 
-\section{First Steps towards an Approximate HMCMC}
+\section{Outline of Posterior Approximating HMCMC}
 Based on these results I decided to go ahead with drafting a Hamiltonian MCMC sampler using the TPS approximated posterior.  Currently the rough stages of this algorithm are very similar to the Shrinking Bullseye:
 \begin{enumerate}
 \item \textit{Initialize:}
 \begin{enumerate}
-\item Drum-up some good set of interpolating points $S$, calculate and $f(S) = {V(s) : s \in S}$  using the log-posterior density $V(q) = ln(P[q|\vec{y}])$ where for a posterior dist $P$ from data $\vec{y}$ over parameter vector $q$, using $q$ to reflect that this is also the generalized position vector.
-\item Following Wendland (2007, ``Computational Aspects of Radial Basis Function Approximation'') set the
+\item Drum-up some good set of interpolating points $S$, calculate and $f(S) = {P(s) : s \in S}$ for a posterior density $P$ from data $\vec{y}$ over parameter vector $q$, using $q$ to reflect that this is also the generalized position vector.  It's better to interpolate $P$ with $\hat{P}$ and then use $\hat{V}(q) = - ln(|\hat{P}(q)|)$ as interpolating $V$ itself might give a potential energy function with undesirable characteristics, e.g. decaying to 0 at infinity.
+\item Following Wendland here (2007, ``Computational Aspects of Radial Basis Function Approximation''). Let $\psi(r)$ be our radial basis function (in this application it's the thin plate spline function, in $\mathbf{R}^2$ this is $\psi(r) = r^2 \text{ln}(r)$, but in higher dimensions the definition gets \textit{wonky} and I'm not going to typeset all that) and $\Pi_{m,d}(x)$ be the matrix of multivariate  monomials of degree $\leq m$ in $d$ variables.  These monomials are, AFAIK, basically a regularization term; when you take the first $m$ derivatives in whatever smoothness penalty you're using you kill off any polynomial terms so we need to add them back in to make the space of interpolate-able functions sufficiently large or something similar; alternately it guarantees that the interpolation matrix will always be invertible which is nice, although I think you could just replace the inverse with the least-squares solution and then drop the polynomials altogether.  Construct the interpolation matrix:
+\[
+C =  \left[ 
+\begin{array}{cc}
+\Psi & \Pi_{m,d}\\
+\Pi_{m,d} & 0_{m+n}\\
+\end{array}
+\right]
+\]
+Where $\Psi = [\psi(\Vert s_i - s_j \Vert)]_{i,j}$, where the $s_i$ are the $n$ interpolating points in $S$.  We then want to solve the matrix equation:
+\begin{equation}
+C \gamma_n = \left[ \begin{array}{c} f(S)\\ 0\\ \end{array} \right] = y_n
+\end{equation}
 
+So our coefficient vector is $\gamma_n = C^{-1} y_n$.
+
+\item Now pick a starting point $q_0$ and finish the initialization stage.
 
 \end{enumerate}
 
 \item \textit{Sample}
-\begun{enumerate}
-\item Starting at point $x$ we propose a point $x'$ by numerically integrating a Hamiltonian system on the approximated potential energy surface $V(q) = -\text{ln}(\hat{\pi}(q)$ with a random initial momentumand quadratic kinetic energy (ie. $K(p) = p^T M P$ where $M$ is a mass matrix).
-\item To check if $S$ requires additional points we pool the $N$ nearest points to every step in the path from Step 1.  That is, let $q^{i}$ be the $i^{\text{th}}$ step where $i = 1,...,s$ in the Leapfrog integration from Step 1, then $B_N(q^{(i)})$ are its $N$ nearest neighbors.  We then take $B = \bigcup\limits_{i=1}^{s}B_N(q^{i})$.
-\item Now perform some kind of cross validation by repeating Step 1 with $\hat{\pi}$ now approximated using $S/B \cup B_l$ where $B_l$ is a random subset $B_l \subset B$ to get $K$ CV candidate points $x_k'$.  Evaluate the acceptance probability $\alpha(x,x_k')$ for each CV candidate, if $\text{max}_k \alpha(x, x_k') - \text{min}_k \alpha(x, x_k') > \epsilon$ where $\epsilon$ is some preset tolerance then we add points to $S$.  IF $\text{max}_k \alpha(x, x_k') - \text{min}_k \alpha(x, x_k') < \epsilon$ then we add no refinements.
-\item  If refinements have been performed go to Step 1 and repeat from there, otherwise proceed to accept $x'$ with probability $\alpha(x,x')$
+\begin{enumerate}
+\item Let the sampler be at parameter position $q$.  Propose a point $q'$ by numerically integrating a Hamiltonian system on the approximated potential energy surface $\hat{V}(q)$ with a random initial momentum $p \sim N(0, M)$ and quadratic kinetic energy (ie. $K(p) = p^T M P$ where $M$ is a user-chosen mass matrix.  For vanilla HMCMC this is optimally set to the covariance matrix in $q$; in Riemannian HMCMC this is the Hessian of $V(q)$.
+\item Check if $S$ requires refinements:
+\begin{enumerate}
+\item Pool the $N$ nearest points to the numerical path from Step 1.  That is, let $q^{i}$ be the $i^{\text{th}}$ step in the proposal trajectory where $i = 1,...,s$ and $q_1 = q$, our current sample.  Then set $B_N(q^{(i)})$ as its $N$ nearest neighbors and take $B = \bigcup\limits_{i=1}^{s}B_N(q^{i})$.
+\item Now perform some kind of cross validation on the proposal process using the same momentum $p$.  Let $\hat{V}_k$ be the RBF interpolated potential calculated using the interpolating set $S_k = S/B \cup B_k$ where $B_k$ is a random subset $B_k \subset B$ for $k =1,...,K$.  Starting from $(q,p)$ run the leapfrog integrator to get new candidates $q_k'$.  Evaluate the acceptance probability $\alpha(q,q_k')$ for each CV candidate, if $\text{max}_k \alpha(q, q_k') - \text{min}_k \alpha(q, q_k') > \epsilon$ where $\epsilon$ is some preset tolerance then we add points to $S$ following some optimality criteria and repeat from (i).  If $\text{max}_k \alpha(x, x_k') - \text{min}_k \alpha(x, x_k') < \epsilon$ then we add no refinements and proceed to (c) below.
+\end{enumerate}
+\item  Accept $q'$ with probability $\alpha(q,q')$, otherwise stay at $q$.  Go to (a).
 \end{enumerate}
 \end{enumerate}
 
-The issue I'm hitting right now is the refinements, it's pretty expensive to just fit a fresh TPS for each CV fold of B so the algorithm would be extremely slow.  I've found some stuff on rank one updates of the coefficients that will bring the cost of fitting a TPS down from $\mathcal{O}(n^3)$ to $\mathcal{O}(n^2)$, since I'm working with around $n = 300$ interpolating points this should be a pretty big speedup.
+One could resolve the equation in (3) during every CV iteration in (ii), however it is computationally cheaper to use rank-one updates and then just perform leave one out CV for a handful of points in $B$.  So let's go through what those will look like.
+
+\section{Rank One Updates for Radial Basis Functions}
+First we should note that $\Psi$ and hence $C$ are symmetric, and furthermore $C$ is invertible.  We need to perform two operations on the interpolation matrix $C$: row/column additions and row/column deletions.  Let's deal with the former first.
+
+So that we can use the basic machinery of rank one updates we write $C^{-1} = (C^TC)^{-1}C^T$.  Let $C_n$ be the interpolation matrix to be updated and assume that we already have $C^{-1}_n$ and $\hat{y_n} = C_n y_n$.  We would not like to add the point $x$ to our interpolating set, so let $C_{n+1} = \left[ \begin{array}{cc} C_n & u(x)\\ u(x)^T & \psi(0)\\ \end{array} \right]$ where $u(x) = [ [\psi( \Vert x_i - x \Vert )]^T, \Pi_{m,d}(x)^T ]^T$ is the row and column that we need to add to $C_n$.  Note that this isn't exactly the updated interpolation matrix, first we need to permute the rows and columns properly, however this is easily plugged into the following results so I'm just going to assume $C = E M \Sigma$ where $M$ is the original interpolation matrix and $E$ and $\Sigma$ are the appropriate row and column permutation matrices (respectively). 
+
+We want to calculate $(C_{n+1}^TC_{n+1})^{-1}C_{n+1}^Ty_{n+1}$, which we will do by calculating $(C_{n+1}^TC_{n+1})^{-1}$ and $C_{n+1}^Ty_{n+1}$ seperately and then multiplying the results.
+
+It's quick to show that $C_{n+1}^T C_{n+1} = C_{n+1}^2$ which is the same as:
+\begin{equation}
+C_{n+1}^2 = \left[
+\begin{array}{cc}
+C_n^2 + uu^T & C_n u + \psi(0) u\\
+(C_n u + \psi(0) u)^T & u^Tu + \psi(0)\\
+\end{array}
+\right]
+\end{equation}
+
+We will need the following results concerning the inverse of a block matrix.  Let $A = \left[ \begin{array}{cc} A_{11} & A_{12} \\ A_{21} & A_{22} \end{array} \right]$.  Define the following quantities:
+\begin{equation}
+\begin{split}
+F_{11} &= A_{11} - A_{12} A_{22}^{-1} A_{21}\\
+F_{22} &= A_{22} - A_{21} A_{11}^{-1} A_{12}\\
+\end{split}
+\end{equation}
+NB: if $A$ is the matrix $C_{n+1}^2$ as defined in (4) we see that $F_22$ is a scalar that we can calculate explicitly, given that we know $C_n^{-1}$.  This is important because $F_{11}^{-1} = A_{11}^{-1} + A_{11}^{-1} A_{12} F_{22}^{-1} A_{21} A_{11}^{-1}$, so if we can easily calculate $F_{22}^{-1}$ then we also can find $F_{11}^{-1}$.  The partitioned inverse matrix $A^{-1}$ is given as:
+\begin{equation}
+A^{-1} = \left[
+\begin{array}{cc}
+F_{11}^{-1} & -A_{11}^{-1} A_{12} F_{22}^{-1}\\
+-A_{22}^{-1} A_{21} F_{11}^{-1} & F_{22}^{-1}\\
+\end{array}
+\right]
+\end{equation}
+
+Since $A_{11} = C_n^2 + uu^T$ to calculate $A_{11}^{-1}$ we will need to use the usual Sherman-Woodbury-Morrison Forumula, which gives $A_{11}^{-1} = C_n^{-2} - \frac{C_n^{-2} uu^t C_n^{-2}}{1 + u^T C_n^{-2}u}$.  All that remains is to plug everything else into (6) and then mutiply the result by $C_{n+1} y_{n+1}$ on the right, which can partly be done by hand.  For brevity I will be mixing notation a little.
+
+\begin{equation}
+\gamma_{n+1}  = \left[
+\begin{array}{cc}
+F_{11}^{-1} C_n - C_n^{-1} u F_{22}^{-1} u^T & F_{11}^{-1} u - C_n^{-1} u F_{22}^{-1} \psi(0)\\
+-\psi(0)^{-1} u^T F_{11}^{-1} C_n + F_{22}^{-1}u^T & -\psi(0)^{-1} u^T F_{11}^{-1} u + F_{22}^{-1} \psi(0)\\
+\end{array}
+\right] y_{n+1}
+\end{equation}
+
+Row/column deletions are then pretty straightforward to compute working backwards from this results.  We start by assuming we know $C_{n+1}^{-2} = A^{-1}$ from (6), and that by partitioning $A^{-1}$ we can find $F_{11}^{-1}$.  Now from (5) we have that $A_{11} = F_{11} + \tilde{u} u^T$ Where $\tilde{u} = \frac{u}{u^Tu + \psi(0)}$.  By applying Sherman-Woodbury-Morrison we can determine $A_{11}^{-1}$, and applying it again gives us $C_n^{-2}$
 
 \section{Goals for Next Week}
 \begin{itemize}
